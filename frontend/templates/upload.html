@@ -1,14 +1,18 @@
 {% extends "base.html" %}
 {% block titulo %}Importar ingredientes — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-1">Importar ingredientes</h1>
-<p class="text-secondary">Carga em lote a partir de um arquivo TXT separado por TAB (padrão TACO).</p>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">Importar ingredientes</h1>
+    <p class="app-subtitulo">Carga em lote a partir de um arquivo TXT separado por TAB (padrão TACO).</p>
+  </div>
+</header>
 
-<div class="row g-3">
+<div class="row g-4">
   <div class="col-12 col-lg-7">
-    <div class="card">
-      <div class="card-body">
-        <form method="post" enctype="multipart/form-data" novalidate>
+    <div class="card h-100">
+      <div class="card-body d-flex flex-column">
+        <form method="post" enctype="multipart/form-data" novalidate class="d-flex flex-column flex-grow-1">
           {% csrf_token %}
           <div class="mb-3">
             <label class="form-label" for="files">Arquivo TXT</label>
@@ -19,17 +23,19 @@
               é tratada como cabeçalho e ignorada.
             </div>
           </div>
-          <button class="btn btn-primario-instancia" type="submit">Importar</button>
-          <a class="btn btn-outline-secondary" href="{% url 'listaIngredientes' %}">Voltar</a>
+          <div class="app-form-acoes mt-auto">
+            <button class="btn btn-primario-instancia" type="submit">Importar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'listaIngredientes' %}">Voltar</a>
+          </div>
         </form>
       </div>
     </div>
   </div>
   <div class="col-12 col-lg-5">
-    <div class="card bg-white h-100">
+    <div class="card h-100">
       <div class="card-body">
-        <h2 class="h6">Como funciona</h2>
-        <ul class="small text-secondary mb-0">
+        <h2 class="app-painel-titulo">Como funciona</h2>
+        <ul class="app-lista-ajuda mb-0">
           <li>Ingredientes com nome já existente são <strong>atualizados</strong>; os demais são criados.</li>
           <li>Gorduras trans são calculadas como 18:1t + 18:2t.</li>
           <li>Linhas com dados inválidos são ignoradas e reportadas ao final.</li>

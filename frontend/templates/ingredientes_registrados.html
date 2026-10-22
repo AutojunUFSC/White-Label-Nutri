@@ -1,64 +1,70 @@
 {% extends "base.html" %}
 {% block titulo %}Ingredientes — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-  <h1 class="h3 mb-0">Ingredientes registrados</h1>
-  <div class="d-flex gap-2">
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">Ingredientes registrados</h1>
+    <p class="app-subtitulo">Base de composição usada no cálculo das fichas, com valores por 100 g.</p>
+  </div>
+  <div class="app-acoes">
     <a class="btn btn-outline-secondary" href="{% url 'upload' %}">Importar TXT</a>
     <a class="btn btn-primario-instancia" href="{% url 'registrarIngrediente' %}">Novo ingrediente</a>
   </div>
-</div>
+</header>
 
-<form method="get" class="row g-2 mb-4">
-  <div class="col-12 col-md-4">
+<form method="get" class="row g-2 app-filtros" role="search">
+  <div class="col-12 col-md">
     <label class="visually-hidden" for="f_nomeIng">Nome</label>
     <input class="form-control" type="text" name="f_nomeIng" id="f_nomeIng"
            placeholder="Nome" value="{{ formFiltro.f_nomeIng.value|default:'' }}">
   </div>
-  <div class="col-12 col-md-3">
+  <div class="col-12 col-sm-6 col-md">
     <label class="visually-hidden" for="f_origemDosDados">Fonte / marca</label>
     <input class="form-control" type="text" name="f_origemDosDados" id="f_origemDosDados"
            placeholder="Fonte / marca" value="{{ formFiltro.f_origemDosDados.value|default:'' }}">
   </div>
-  <div class="col-12 col-md-3">
+  <div class="col-12 col-sm-6 col-md">
     <label class="visually-hidden" for="f_autorIng">Autor</label>
     <input class="form-control" type="text" name="f_autorIng" id="f_autorIng"
            placeholder="Autor" value="{{ formFiltro.f_autorIng.value|default:'' }}">
   </div>
-  <div class="col-12 col-md-2 d-flex gap-2">
+  <div class="col-12 col-md-auto app-filtros-acoes">
     <button class="btn btn-outline-secondary flex-grow-1" type="submit">Filtrar</button>
     <a class="btn btn-link" href="{% url 'listaIngredientes' %}">Limpar</a>
   </div>
 </form>
 
-<div class="table-responsive">
-  <table class="table table-hover align-middle bg-white">
+<div class="table-responsive app-painel">
+  <table class="table table-hover align-middle">
     <caption class="visually-hidden">Ingredientes cadastrados</caption>
     <thead>
       <tr>
         <th scope="col">Ingrediente</th>
         <th scope="col">Fonte / marca</th>
         <th scope="col">Autor</th>
-        <th scope="col">Data</th>
+        <th scope="col" class="text-end">Data</th>
         <th scope="col" class="text-end">kcal/100g</th>
-        <th scope="col" class="text-end">Ações</th>
+        <th scope="col" class="text-end"><span class="visually-hidden">Ações</span></th>
       </tr>
     </thead>
     <tbody>
       {% for ingrediente in ingredientes %}
       <tr>
         <td>
-          {{ ingrediente.nomeIng }}
+          <span class="fw-medium">{{ ingrediente.nomeIng }}</span>
           {% if ingrediente.composicao %}
             <div class="text-secondary small">{{ ingrediente.composicao }}</div>
           {% endif %}
         </td>
         <td>{{ ingrediente.origemDosDados }}</td>
-        <td>{{ ingrediente.autorIng.nome }}</td>
-        <td>{{ ingrediente.dataCriacao|date:"d/m/Y" }}</td>
-        <td class="text-end">{{ ingrediente.energiakcal_100g|floatformat:"-1" }}</td>
+        <td class="text-secondary">{{ ingrediente.autorIng.nome }}</td>
+        <td class="text-end text-secondary">{{ ingrediente.dataCriacao|date:"d/m/Y" }}</td>
         <td class="text-end">
-          <div class="d-inline-flex gap-1">
+          {{ ingrediente.energiakcal_100g|floatformat:"-1" }}
+          {% if ingrediente.energiakcal_100g %}<span class="app-barra" style="--p: {% widthratio ingrediente.energiakcal_100g 900 100 %}" aria-hidden="true"></span>{% else %}<span class="app-barra is-vazia" aria-hidden="true"></span>{% endif %}
+        </td>
+        <td class="text-end">
+          <div class="app-acoes-linha">
             <a class="btn btn-sm btn-outline-secondary"
                href="{% url 'editarIngrediente' ingrediente.pk %}">Editar</a>
             <form method="post" action="{% url 'deletarIngrediente' ingrediente.pk %}"
@@ -70,11 +76,11 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="6" class="text-center text-secondary py-4">Nenhum ingrediente encontrado.</td></tr>
+      <tr><td colspan="6" class="app-vazio">Nenhum ingrediente encontrado.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
-{% include "_paginacao.html" %}
+<div class="app-paginacao">{% include "_paginacao.html" %}</div>
 {% endblock %}

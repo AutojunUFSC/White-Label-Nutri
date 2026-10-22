@@ -1,66 +1,76 @@
 {% extends "base.html" %}
 {% block titulo %}Fichas — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-  <h1 class="h3 mb-0">Fichas registradas</h1>
-  <a class="btn btn-primario-instancia" href="{% url 'registrarFicha1' %}">Nova ficha</a>
-</div>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">Fichas registradas</h1>
+    <p class="app-subtitulo">Fichas técnicas de preparação e seus rótulos nutricionais.</p>
+  </div>
+  <div class="app-acoes">
+    <a class="btn btn-primario-instancia" href="{% url 'registrarFicha1' %}">Nova ficha</a>
+  </div>
+</header>
 
-<form method="get" class="row g-2 mb-4">
-  <div class="col-12 col-md-4">
+<form method="get" class="row g-2 app-filtros" role="search">
+  <div class="col-12 col-md">
     <label class="visually-hidden" for="f_nomeFicha">Receita</label>
     <input class="form-control" type="text" name="f_nomeFicha" id="f_nomeFicha"
            placeholder="Receita" value="{{ formFiltro.f_nomeFicha.value|default:'' }}">
   </div>
-  <div class="col-12 col-md-3">
+  <div class="col-12 col-sm-6 col-md">
     <label class="visually-hidden" for="f_cliente">Cliente</label>
     <input class="form-control" type="text" name="f_cliente" id="f_cliente"
            placeholder="Cliente" value="{{ formFiltro.f_cliente.value|default:'' }}">
   </div>
-  <div class="col-12 col-md-3">
+  <div class="col-12 col-sm-6 col-md">
     <label class="visually-hidden" for="f_autor">Autor</label>
     <input class="form-control" type="text" name="f_autor" id="f_autor"
            placeholder="Autor" value="{{ formFiltro.f_autor.value|default:'' }}">
   </div>
-  <div class="col-12 col-md-2 d-flex gap-2">
+  <div class="col-12 col-md-auto app-filtros-acoes">
     <button class="btn btn-outline-secondary flex-grow-1" type="submit">Filtrar</button>
     <a class="btn btn-link" href="{% url 'listaFichas' %}">Limpar</a>
   </div>
 </form>
 
-<div class="table-responsive">
-  <table class="table table-hover align-middle bg-white">
+<div class="table-responsive app-painel">
+  <table class="table table-hover align-middle">
     <caption class="visually-hidden">Fichas técnicas registradas</caption>
     <thead>
       <tr>
         <th scope="col">Receita</th>
         <th scope="col">Cliente</th>
         <th scope="col">Autor</th>
-        <th scope="col">Data</th>
+        <th scope="col" class="text-end">Data</th>
         <th scope="col">Status</th>
-        <th scope="col" class="text-end">Ações</th>
+        <th scope="col" class="text-end"><span class="visually-hidden">Ações</span></th>
       </tr>
     </thead>
     <tbody>
       {% for ficha in fichas %}
       <tr>
         <td><a href="{% url 'fichaX' ficha.pk %}">{{ ficha.nomeFicha }}</a></td>
-        <td>{{ ficha.cliente }}</td>
-        <td>{{ ficha.autor.nome }}</td>
-        <td>{{ ficha.dataCriacao|date:"d/m/Y" }}</td>
         <td>
-          {% if ficha.finalizada %}<span class="badge text-bg-success">Finalizada</span>
-          {% else %}<span class="badge text-bg-secondary">Em edição</span>{% endif %}
+          <span class="app-cliente">
+            <span class="app-inicial" data-l="{{ ficha.cliente|slice:':1'|upper }}" aria-hidden="true">{{ ficha.cliente|slice:":1"|upper }}</span>
+            {{ ficha.cliente }}
+          </span>
+        </td>
+        <td class="text-secondary">{{ ficha.autor.nome }}</td>
+        <td class="text-end text-secondary">{{ ficha.dataCriacao|date:"d/m/Y" }}</td>
+        <td>
+          {% if ficha.finalizada %}<span class="app-status is-finalizada">Finalizada</span>
+          {% else %}<span class="app-status">Em edição</span>{% endif %}
         </td>
         <td class="text-end">
-          <div class="d-inline-flex gap-1">
+          <div class="app-acoes-linha">
             <a class="btn btn-sm btn-outline-secondary" href="{% url 'fichaX' ficha.pk %}">Ver rótulo</a>
             <a class="btn btn-sm btn-outline-secondary" href="{% url 'editarFicha1' ficha.pk %}">Editar</a>
           </div>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="6" class="text-center text-secondary py-4">
+      <tr><td colspan="6" class="app-vazio">
         Nenhuma ficha encontrada. <a href="{% url 'registrarFicha1' %}">Criar a primeira ficha</a>.
       </td></tr>
       {% endfor %}
@@ -68,5 +78,5 @@
   </table>
 </div>
 
-{% include "_paginacao.html" %}
+<div class="app-paginacao">{% include "_paginacao.html" %}</div>
 {% endblock %}

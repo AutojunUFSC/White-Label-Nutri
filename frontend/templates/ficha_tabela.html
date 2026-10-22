@@ -1,22 +1,26 @@
 {% extends "base.html" %}
 {% block titulo %}Tabela nutricional: {{ fichaAtual.nomeFicha }} — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-1">Tabela nutricional</h1>
-<p class="text-secondary">
-  {{ fichaAtual.nomeFicha }} · escolha o que aparece no rótulo final e complete as informações.
-</p>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">Tabela nutricional</h1>
+    <p class="app-subtitulo">
+      <strong>{{ fichaAtual.nomeFicha }}</strong> · escolha o que aparece no rótulo final e complete as informações.
+    </p>
+  </div>
+</header>
 
 {% include "_wizard.html" %}
 
 <div class="card mb-4">
-  <div class="card-header bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
-    <h2 class="h6 mb-0">Nutrientes calculados</h2>
-    <span class="text-secondary small">Marque a coluna “No rótulo” para incluir o nutriente na versão final</span>
+  <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <h2>Nutrientes calculados</h2>
+    <span class="text-secondary">Marque a coluna “No rótulo” para incluir o nutriente na versão final</span>
   </div>
   <div class="table-responsive" style="max-height: 32rem; overflow-y: auto;">
-    <table class="table table-sm table-hover align-middle mb-0 bg-white">
+    <table class="table table-sm table-hover align-middle mb-0">
       <caption class="visually-hidden">Valores calculados por nutriente</caption>
-      <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+      <thead style="position: sticky; top: 0; z-index: 1;">
         <tr>
           <th scope="col">Nutriente</th>
           <th scope="col" class="text-end">Total</th>
@@ -30,18 +34,21 @@
       </thead>
       <tbody>
         {% for linha in linhasTabela %}
-        <tr {% if linha.mostrar %}class="table-success"{% endif %}>
+        <tr {% if linha.mostrar %}class="linha-no-rotulo"{% endif %}>
           <th scope="row" class="fw-normal">{{ linha.rotulo }}</th>
-          <td class="text-end">{{ linha.total|floatformat:"-3" }}</td>
-          <td class="text-end">{{ linha.por_100g|floatformat:"-3" }}</td>
-          <td class="text-end">{{ linha.por_porcao|floatformat:"-3" }}</td>
+          <td class="text-end text-secondary">{{ linha.total|floatformat:"-3" }}</td>
+          <td class="text-end text-secondary">{{ linha.por_100g|floatformat:"-3" }}</td>
+          <td class="text-end text-secondary">{{ linha.por_porcao|floatformat:"-3" }}</td>
           <td class="text-end fw-semibold">{{ linha.arred|floatformat:"-2" }}</td>
-          <td class="text-end">{{ linha.vd }}</td>
-          <td>{{ linha.unidade }}</td>
+          <td class="text-end">
+            {{ linha.vd }}
+            {% if linha.vd or linha.vd == 0 %}<span class="app-barra" style="--p: {% widthratio linha.vd 100 100 %}" aria-hidden="true"></span>{% else %}<span class="app-barra is-vazia" aria-hidden="true"></span>{% endif %}
+          </td>
+          <td class="text-secondary">{{ linha.unidade }}</td>
           <td class="text-center">
             <form method="post" action="{% url 'atualizarMostrar' pk=fichaAtual.pk item=linha.chave %}">
               {% csrf_token %}
-              <button type="submit" class="btn btn-sm {% if linha.mostrar %}btn-success{% else %}btn-outline-secondary{% endif %}"
+              <button type="submit" class="btn btn-sm btn-outline-secondary btn-rotulo"
                       aria-pressed="{% if linha.mostrar %}true{% else %}false{% endif %}"
                       aria-label="{% if linha.mostrar %}Remover{% else %}Incluir{% endif %} {{ linha.rotulo }} no rótulo">
                 {% if linha.mostrar %}Sim{% else %}Não{% endif %}
@@ -55,12 +62,12 @@
   </div>
 </div>
 
-<div class="row g-3">
+<div class="row g-4">
   <div class="col-12 col-lg-6">
     <div class="card h-100">
-      <div class="card-header bg-white"><h2 class="h6 mb-0">Nutrientes adicionais</h2></div>
+      <div class="card-header"><h2>Nutrientes adicionais</h2></div>
       <div class="card-body">
-        <p class="text-secondary small">
+        <p class="app-painel-nota">
           Use para itens que não vêm dos ingredientes cadastrados.
         </p>
         <form method="post" novalidate>
@@ -77,8 +84,7 @@
         </form>
 
         {% if nutrientesExtras %}
-        <hr>
-        <ul class="list-group list-group-flush">
+        <ul class="list-group list-group-flush mt-3 border-top">
           {% for extra in nutrientesExtras %}
           <li class="list-group-item d-flex justify-content-between align-items-center px-0">
             <span>{{ extra.nomeNutri }}: {{ extra.qtde_Arred }} {{ extra.medida }}
@@ -98,15 +104,15 @@
 
   <div class="col-12 col-lg-6">
     <div class="card h-100">
-      <div class="card-header bg-white"><h2 class="h6 mb-0">Informações complementares</h2></div>
+      <div class="card-header"><h2>Informações complementares</h2></div>
       <div class="card-body d-flex flex-column">
         <form method="post" novalidate class="d-flex flex-column h-100">
           {% csrf_token %}
           {% include "_campo.html" with campo=formInfComplementares.informacoesComplementares %}
-          <p class="text-secondary small">
+          <p class="app-painel-nota">
             Aparece no rótulo como “ALÉRGICOS”. Ex.: CONTÉM GLÚTEN. PODE CONTER TRAÇOS DE SOJA.
           </p>
-          <div class="mt-auto d-flex gap-2">
+          <div class="mt-auto app-form-acoes">
             <button class="btn btn-primario-instancia" type="submit">Salvar e ver rótulo</button>
             <a class="btn btn-outline-secondary" href="{% url 'editarFicha2' fichaAtual.pk %}">Voltar</a>
           </div>
