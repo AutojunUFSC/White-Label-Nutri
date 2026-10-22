@@ -18,3 +18,6 @@ backups/*
 *.dump
 *.dump.gz
 *.backup
+
+# Variaveis de cada empresa provisionada (contem segredos).
+instancias/

@@ -46,16 +46,32 @@ Precisam de um PostgreSQL acessível pela `DATABASE_URL` — o pytest-django cri
 destrói o banco de teste sozinho. Cobertura por camada em [docs/TESTES.md](docs/TESTES.md).
 
 ## Provisionar uma empresa nova
+Um script interativo cria o banco da empresa, gera as variáveis dela (com `SECRET_KEY`
+própria), aplica as migrações e configura a instância:
+
 ```bash
-createdb nutri_sua_empresa
-DATABASE_URL=postgres://.../nutri_sua_empresa python backend/manage.py migrate
-DATABASE_URL=postgres://.../nutri_sua_empresa python backend/manage.py bootstrap_instancia \
-    --nome "SUA-EMPRESA" --admin admin --email admin@sua-empresa.com --chave SUA-CHAVE-2026
+python scripts/provisionar_empresa.py
 ```
 
-O deploy de cada empresa é independente: banco próprio, variáveis próprias. O `Procfile`
-já traz o `migrate` de release e o gunicorn — passo a passo em
-[docs/OPERACAO.md](docs/OPERACAO.md).
+Ele pergunta nome, identificador, domínio, administrador (usuário, e-mail e senha), cor
+primária, chave de cadastro e ano de corte, mostra um resumo e só cria depois da sua
+confirmação. Cada pergunta tem um padrão; no caso comum basta informar nome, e-mail e senha.
+
+O servidor PostgreSQL é o da `DATABASE_URL` do `.env` (só host, porta e credenciais são
+usados). Cada empresa ganha um banco `nutri_<identificador>`, e suas variáveis ficam em
+`instancias/<identificador>.env`, fora do Git.
+
+```bash
+python scripts/provisionar_empresa.py --rodar SEU-IDENTIFICADOR    # sobe o servidor da empresa
+python scripts/provisionar_empresa.py --remover SEU-IDENTIFICADOR  # apaga banco e variáveis
+```
+
+O `--remover` mostra o que será apagado, oferece um backup em `backups/` e exige que você
+digite o identificador para confirmar. Só apaga empresas criadas pelo próprio script.
+
+O script cobre a preparação do banco e da instância. A publicação (Gunicorn, Nginx, HTTPS e
+variáveis em produção) é independente por empresa e está em [docs/OPERACAO.md](docs/OPERACAO.md);
+o `Procfile` já traz o `migrate` de release e o gunicorn.
 
 ## Manutenção da base
 ```bash
