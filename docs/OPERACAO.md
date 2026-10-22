@@ -6,17 +6,17 @@ o mesmo repositório para todas.
 ## Provisionar uma empresa nova
 
 ```bash
-createdb nutri_acme
+createdb nutri_sua_empresa
 
-export DATABASE_URL=postgres://usuario:senha@host:5432/nutri_acme
+export DATABASE_URL=postgres://usuario:senha@host:5432/nutri_sua_empresa
 export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(64))')"
-export ALLOWED_HOSTS=nutri.acme.com.br
+export ALLOWED_HOSTS=nutri.sua-empresa.com.br
 export DJANGO_SETTINGS_MODULE=config.settings.prod
 
 python backend/manage.py migrate
 python backend/manage.py bootstrap_instancia \
-    --nome "Nutri Acme" --admin ana --email ana@acme.com \
-    --chave ACME-2026 --cor "#198754"
+    --nome "SUA-EMPRESA" --admin admin --email admin@sua-empresa.com \
+    --chave SUA-CHAVE-2026 --cor "#198754"
 ```
 
 O `bootstrap_instancia` cria, numa transação: a configuração da instância, o grupo

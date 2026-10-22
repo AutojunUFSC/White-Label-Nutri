@@ -4,8 +4,8 @@ Cada empresa roda com banco e hospedagem próprios; este comando prepara um banc
 recém-migrado: configuração white-label, grupo de administradores, primeiro
 usuário administrador e chave de cadastro.
 
-    python manage.py bootstrap_instancia --nome "Nutri Acme" \
-        --admin ana --email ana@acme.com --chave CHAVE-2026
+    python manage.py bootstrap_instancia --nome "SUA-EMPRESA" \
+        --admin admin --email admin@sua-empresa.com --chave SUA-CHAVE-2026
 
 A senha pode vir por --senha ou pela variável de ambiente INSTANCIA_ADMIN_SENHA;
 sem nenhuma das duas, é solicitada interativamente.
@@ -67,7 +67,10 @@ class Command(BaseCommand):
             usuario = User.objects.create_user(
                 opcoes["admin"], email=opcoes["email"], password=senha
             )
+            # Superusuário: o grupo não tem permissões de modelo, e sem elas o admin
+            # (onde se ajustam nome, cor e logotipo) abriria vazio para este usuário.
             usuario.is_staff = True
+            usuario.is_superuser = True
             usuario.save()
             grupo, _ = Group.objects.get_or_create(name=settings.GRUPO_ADMINISTRADORES)
             usuario.groups.add(grupo)

@@ -55,6 +55,6 @@ def test_configuracao_instancia_e_singleton(db):
 
 
 def test_branding_aparece_no_login(client, db):
-    ConfiguracaoInstancia.objects.create(nome_exibicao="NutriAcme", cor_primaria="#aa00aa")
+    ConfiguracaoInstancia.objects.create(nome_exibicao="EmpresaTeste", cor_primaria="#aa00aa")
     corpo = client.get("/loginUser").content.decode()
-    assert "NutriAcme" in corpo and "#aa00aa" in corpo
+    assert "EmpresaTeste" in corpo and "#aa00aa" in corpo

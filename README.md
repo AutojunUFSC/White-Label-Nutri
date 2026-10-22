@@ -26,7 +26,7 @@ pip install -r requirements-dev.txt
 createdb nutri                                      # banco local desta instância
 export DATABASE_URL=postgres://postgres:senha@localhost:5432/nutri
 python backend/manage.py migrate
-python backend/manage.py bootstrap_instancia --nome "Nutri Local" \
+python backend/manage.py bootstrap_instancia --nome "SUA-EMPRESA" \
     --admin admin --email admin@exemplo.com --chave CHAVE-LOCAL
 python backend/manage.py runserver
 ```
@@ -47,10 +47,10 @@ destrói o banco de teste sozinho. Cobertura por camada em [docs/TESTES.md](docs
 
 ## Provisionar uma empresa nova
 ```bash
-createdb nutri_acme
-DATABASE_URL=postgres://.../nutri_acme python backend/manage.py migrate
-DATABASE_URL=postgres://.../nutri_acme python backend/manage.py bootstrap_instancia \
-    --nome "Nutri Acme" --admin ana --email ana@acme.com --chave ACME-2026
+createdb nutri_sua_empresa
+DATABASE_URL=postgres://.../nutri_sua_empresa python backend/manage.py migrate
+DATABASE_URL=postgres://.../nutri_sua_empresa python backend/manage.py bootstrap_instancia \
+    --nome "SUA-EMPRESA" --admin admin --email admin@sua-empresa.com --chave SUA-CHAVE-2026
 ```
 
 O deploy de cada empresa é independente: banco próprio, variáveis próprias. O `Procfile`
@@ -77,6 +77,30 @@ porque plataformas de disco efêmero apagariam o upload no próximo restart.
 Aceita PNG, JPG ou WEBP até 1 MB, validados pelo conteúdo do arquivo. Aparece na
 tela de login e no topo do sistema. Para trocar, basta enviar outro; a marca antiga
 some do cache do navegador na hora.
+
+O primeiro administrador criado pelo `bootstrap_instancia` é superusuário, então já
+enxerga *Configuração da instância* em <http://localhost:8000/admin/>.
+
+### Cores sugeridas
+
+A cor primária é um código hexadecimal (`#RRGGBB`), passado em `--cor` no provisionamento
+ou editado depois no admin. Prefira tons médios a escuros: o texto branco precisa de
+contraste sobre a cor.
+
+| Cor | Código | Cor | Código |
+| --- | --- | --- | --- |
+| Verde (padrão) | `#198754` | Azul | `#0d6efd` |
+| Azul-marinho | `#0b3c8a` | Ciano | `#0891b2` |
+| Roxo | `#6f42c1` | Índigo | `#4f46e5` |
+| Rosa | `#d63384` | Vermelho | `#dc3545` |
+| Laranja | `#e8590c` | Âmbar | `#b45309` |
+| Verde-escuro | `#166534` | Turquesa | `#0f766e` |
+| Cinza-grafite | `#374151` | Marrom | `#7c4a2d` |
+
+```bash
+python backend/manage.py bootstrap_instancia --nome "SUA-EMPRESA" --admin admin \
+    --chave SUA-CHAVE-2026 --cor "#0f766e"
+```
 
 ## Documentação
 - [docs/VISAO_GERAL.md](docs/VISAO_GERAL.md) — o produto, o modelo white-label e o índice
