@@ -86,3 +86,24 @@ def test_empresa_nova_funciona_ponta_a_ponta(client, db):
     ).url == "/listaFichas"
     # branding da instância aparece na interface
     assert "Nutri Beta" in client.get("/listaFichas").content.decode()
+
+
+def test_testar_leitura_rotulo_grava_csv(tmp_path, settings, monkeypatch):
+    import io
+
+    from django.core.management import call_command
+    from PIL import Image
+
+    from apps.fichas import leitura_rotulo
+
+    settings.GEMINI_API_KEY = "chave-de-teste"
+    monkeypatch.setattr(
+        leitura_rotulo, "_chamar_gemini",
+        lambda jpeg: '{"e_tabela_nutricional": true, "nutrientes": '
+                     '{"proteinas": {"por_100g": 7}}}',
+    )
+    Image.new("RGB", (100, 100)).save(tmp_path / "a.jpg")
+    saida = tmp_path / "saida.csv"
+    call_command("testar_leitura_rotulo", str(tmp_path), saida=str(saida), stdout=io.StringIO())
+    conteudo = saida.read_text(encoding="utf-8-sig")
+    assert "a.jpg" in conteudo and ";7" in conteudo

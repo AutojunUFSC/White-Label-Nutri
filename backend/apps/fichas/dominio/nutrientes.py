@@ -69,7 +69,7 @@ NUTRIENTES: tuple[NutrienteDef, ...] = (
     NutrienteDef("fluor", "mg", 4, False, "Flúor", 41),
     NutrienteDef("iodo", "μg", 150, False, "Iodo", 42),
     NutrienteDef("molibdenio", "μg", 45, False, "Molibdênio", 43),
-    # A referência de %VD do selênio (11) diverge da IN 75/2020 (34 µg); mantida
+    # A referência de %VD do selênio (11) diverge da IN 75/2020 (34 μg); mantida
     # deliberadamente para não alterar rótulos já emitidos — ver BR-008.
     NutrienteDef("selenio", "μg", 11, False, "Selenio", 44),
     NutrienteDef("colina", "mg", 550, False, "Colina", 45),
@@ -85,3 +85,55 @@ ORDEM_ROTULO: tuple[NutrienteDef, ...] = tuple(
     sorted((n for n in NUTRIENTES if n.ordem_rotulo is not None),
            key=lambda n: n.ordem_rotulo)
 )
+
+# Unidade em que o valor está GUARDADO no ingrediente, quando difere de `unidade`.
+# Os dados da TACO trazem retinol, RE e RAE em μg (fígado bovino: 14.574 μg/100 g),
+# mas o registro acima exibe "mg". Usado no cadastro de ingrediente e na leitura
+# por foto; o rótulo final continua usando `unidade` (não alterado aqui).
+UNIDADE_ARMAZENADA: dict[str, str] = {"retinol": "μg", "RE": "μg", "vitaminaARAE": "μg"}
+
+
+def unidade_armazenada(n: NutrienteDef) -> str:
+    return UNIDADE_ARMAZENADA.get(n.chave, n.unidade)
+
+
+# Agrupamento e ordem dos campos no cadastro de ingrediente, como numa tabela
+# nutricional real. Só afeta a tela de cadastro, não o rótulo.
+GRUPOS_CADASTRO: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("Tabela principal", (
+        "energiakcal", "energiaKJ", "carboidratos", "acucaresTotais", "acucaresadd",
+        "proteinas", "gordTotais", "gordSat", "gordTrans", "fibras", "sodio",
+    )),
+    ("Outras gorduras", ("gordMono", "gordPoli", "colesterol", "omega3", "omega6")),
+    ("Vitaminas", (
+        "retinol", "RE", "vitaminaARAE", "vitaminaD", "vitaminaE", "vitaminaK",
+        "vitaminaC", "tiamina", "riboflavina", "niancina", "acidoPantotenico",
+        "piridoxina", "biotina", "acidoFolico", "vitaminaB12", "colina",
+    )),
+    ("Minerais", (
+        "calcio", "ferro", "magnesio", "fosforo", "potassio", "zinco", "cobre",
+        "manganes", "selenio", "iodo", "cromo", "fluor", "molibdenio", "cloreto",
+    )),
+)
+
+# Nomes mais claros que o rótulo do registro, só para o cadastro.
+ROTULO_CADASTRO: dict[str, str] = {
+    "energiakcal": "Valor energético",
+    "energiaKJ": "Valor energético",
+    "retinol": "Vitamina A — retinol",
+    "RE": "Vitamina A — RE",
+    "vitaminaARAE": "Vitamina A — RAE",
+    "tiamina": "Tiamina (B1)",
+    "riboflavina": "Riboflavina (B2)",
+    "niancina": "Niacina (B3)",
+    "acidoPantotenico": "Ácido pantotênico (B5)",
+    "piridoxina": "Piridoxina (B6)",
+    "biotina": "Biotina (B7)",
+    "acidoFolico": "Ácido fólico (B9)",
+    "gordPoli": "Gorduras poli-insaturadas",
+    "gordMono": "Gorduras monoinsaturadas",
+    "selenio": "Selênio",
+    "omega3": "Ômega 3",
+    "omega6": "Ômega 6",
+}
+

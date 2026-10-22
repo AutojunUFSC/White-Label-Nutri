@@ -2,8 +2,12 @@
 {% load static %}
 {% block titulo %}Receita: {{ fichaAtual.nomeFicha }} — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-1">Receita</h1>
-<p class="text-secondary">{{ fichaAtual.nomeFicha }} · cliente {{ fichaAtual.cliente }}</p>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">Receita</h1>
+    <p class="app-subtitulo"><strong>{{ fichaAtual.nomeFicha }}</strong> · cliente {{ fichaAtual.cliente }}</p>
+  </div>
+</header>
 
 {% include "_wizard.html" %}
 
@@ -14,37 +18,29 @@
   </div>
 {% endif %}
 
-<div class="row g-3 mb-4">
-  <div class="col-6 col-lg-3">
-    <div class="card text-center h-100"><div class="card-body py-3">
-      <div class="text-secondary small">Peso de preparação</div>
-      <div class="h5 mb-0">{{ fichaAtual.pesoLiquidoPreparacao|floatformat:"-2" }} g</div>
-    </div></div>
+<dl class="app-kpis">
+  <div class="app-kpi">
+    <dt>Peso de preparação</dt>
+    <dd>{{ fichaAtual.pesoLiquidoPreparacao|floatformat:"-2" }}<span class="app-unidade">g</span></dd>
   </div>
-  <div class="col-6 col-lg-3">
-    <div class="card text-center h-100"><div class="card-body py-3">
-      <div class="text-secondary small">Peso total</div>
-      <div class="h5 mb-0">{{ fichaAtual.pesoTotal|floatformat:"-2" }} g</div>
-    </div></div>
+  <div class="app-kpi">
+    <dt>Peso total</dt>
+    <dd>{{ fichaAtual.pesoTotal|floatformat:"-2" }}<span class="app-unidade">g</span></dd>
   </div>
-  <div class="col-6 col-lg-3">
-    <div class="card text-center h-100"><div class="card-body py-3">
-      <div class="text-secondary small">Energia (porção)</div>
-      <div class="h5 mb-0">{{ tabelaNutricional.energiakcal_Arred|floatformat:"-2" }} kcal</div>
-    </div></div>
+  <div class="app-kpi">
+    <dt>Energia (porção)</dt>
+    <dd>{{ tabelaNutricional.energiakcal_Arred|floatformat:"-2" }}<span class="app-unidade">kcal</span></dd>
   </div>
-  <div class="col-6 col-lg-3">
-    <div class="card text-center h-100"><div class="card-body py-3">
-      <div class="text-secondary small">Itens na receita</div>
-      <div class="h5 mb-0">{{ itensReceita|length }}</div>
-    </div></div>
+  <div class="app-kpi">
+    <dt>Itens na receita</dt>
+    <dd>{{ itensReceita|length }}</dd>
   </div>
-</div>
+</dl>
 
 <div class="card mb-4">
-  <div class="card-header bg-white"><h2 class="h6 mb-0">Adicionar ingrediente</h2></div>
+  <div class="card-header"><h2>Adicionar ingrediente</h2></div>
   <div class="card-body">
-    <form method="post" novalidate class="row g-2 align-items-end">
+    <form method="post" novalidate class="row g-3 align-items-end">
       {% csrf_token %}
       <div class="col-12 col-lg-4 position-relative" data-busca-ingrediente>
         <label class="form-label" for="ingExtra">Ingrediente</label>
@@ -72,7 +68,7 @@
         <label class="form-label" for="{{ formReceita.medidaCaseira.id_for_label }}">Medida caseira</label>
         {{ formReceita.medidaCaseira }}
       </div>
-      <div class="col-12 d-flex gap-2 mt-2">
+      <div class="col-12 d-flex flex-wrap gap-2">
         <button class="btn btn-primario-instancia" type="submit">Adicionar à receita</button>
         <a class="btn btn-outline-secondary" href="{% url 'registrarIngrediente' %}" target="_blank" rel="noopener">
           Cadastrar novo ingrediente
@@ -82,8 +78,8 @@
   </div>
 </div>
 
-<div class="table-responsive">
-  <table class="table table-hover align-middle bg-white">
+<div class="table-responsive app-painel">
+  <table class="table table-hover align-middle">
     <caption class="visually-hidden">Ingredientes da receita</caption>
     <thead>
       <tr>
@@ -92,7 +88,7 @@
         <th scope="col" class="text-end">Peso bruto</th>
         <th scope="col" class="text-end">Peso líquido</th>
         <th scope="col">Medida caseira</th>
-        <th scope="col" class="text-end">Ações</th>
+        <th scope="col" class="text-end"><span class="visually-hidden">Ações</span></th>
       </tr>
     </thead>
     <tbody>
@@ -104,11 +100,14 @@
           </a>
         </td>
         <td>{{ item.nomeFantasia }}</td>
-        <td class="text-end">{{ item.pesoBruto|floatformat:"-2" }} g</td>
-        <td class="text-end">{{ item.pesoLiquido|floatformat:"-2" }} g</td>
-        <td>{{ item.medidaCaseira }}</td>
+        <td class="text-end">{{ item.pesoBruto|floatformat:"-2" }}<span class="app-unidade">g</span></td>
         <td class="text-end">
-          <div class="d-inline-flex gap-1">
+          {{ item.pesoLiquido|floatformat:"-2" }}<span class="app-unidade">g</span>
+          {% if item.pesoLiquido and fichaAtual.pesoLiquidoPreparacao %}<span class="app-barra" style="--p: {% widthratio item.pesoLiquido fichaAtual.pesoLiquidoPreparacao 100 %}" aria-hidden="true"></span>{% else %}<span class="app-barra is-vazia" aria-hidden="true"></span>{% endif %}
+        </td>
+        <td class="text-secondary">{{ item.medidaCaseira }}</td>
+        <td class="text-end">
+          <div class="app-acoes-linha">
             <a class="btn btn-sm btn-outline-secondary"
                href="{% url 'editarItemReceita' fichaAtual.pk item.id %}">Editar</a>
             <form method="post" action="{% url 'deletarItemReceita' fichaAtual.pk item.id %}"
@@ -123,7 +122,7 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="6" class="text-center text-secondary py-4">
+      <tr><td colspan="6" class="app-vazio">
         Nenhum ingrediente adicionado. Use o formulário acima para montar a receita.
       </td></tr>
       {% endfor %}
@@ -131,7 +130,7 @@
   </table>
 </div>
 
-<div class="d-flex gap-2 mt-3">
+<div class="app-form-acoes mt-4">
   <a class="btn btn-outline-secondary" href="{% url 'editarFicha1' fichaAtual.pk %}">Voltar</a>
   <a class="btn btn-primario-instancia" href="{% url 'editarFicha3' fichaAtual.pk %}">Ir para a tabela nutricional</a>
 </div>

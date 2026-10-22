@@ -84,6 +84,10 @@ no build se o seu provedor não o fizer.
 | `CONN_MAX_AGE` | não | padrão 60 s |
 | `SESSION_COOKIE_SECURE` | não | padrão ligado; só desligue para testar em `localhost` |
 | `CSRF_COOKIE_SECURE` | não | idem |
+| `GEMINI_API_KEY` | não | liga a leitura da tabela nutricional por foto; sem ela o botão não aparece |
+| `GEMINI_MODELO` | não | padrão `gemini-3.6-flash` (testado: rápido e lê todos os campos; o `3.8-flash` estava sobrecarregado e o `3.5-flash-lite` omitia nutrientes) |
+| `GEMINI_RACIOCINIO` | não | `minimal`, `low` (padrão), `medium` ou `high`; mais alto = mais lento |
+| `GEMINI_TIMEOUT` | não | padrão 45 s (o gunicorn do `Procfile` espera até 60 s) |
 
 Em desenvolvimento, um arquivo `.env` na raiz substitui as variáveis exportadas —
 modelo em `.env.example`.

@@ -133,7 +133,7 @@ class IngredienteForm(forms.ModelForm):
         model = Ingrediente
         fields = [
             "autorIng", "nomeIng", "composicao", "origemDosDados", "qtdeDoIngrediente",
-            "addManualmente", "numRef", "dataCriacao",
+            "dataCriacao", "numRef",
             "proteinas", "gordTotais", "acucaresTotais", "carboidratos", "fibras",
             "energiakcal", "energiaKJ", "calcio", "ferro", "magnesio", "fosforo",
             "potassio", "sodio", "zinco", "cobre", "manganes",
@@ -149,8 +149,10 @@ class IngredienteForm(forms.ModelForm):
             "nomeIng": "Ingrediente",
             "origemDosDados": "Fonte / Marca",
             "qtdeDoIngrediente": "Quantidade do ingrediente (g)",
-            "addManualmente": "Adicionado manualmente",
             "numRef": "Nº de referência",
+        }
+        help_texts = {
+            "numRef": "Número do alimento na tabela de origem (ex.: TACO). Deixe 0 se não houver.",
         }
 
     def __init__(self, *args, **kwargs):

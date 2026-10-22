@@ -86,3 +86,4 @@ some do cache do navegador na hora.
 - [docs/INTERFACE.md](docs/INTERFACE.md) — as telas, com capturas
 - [docs/OPERACAO.md](docs/OPERACAO.md) — provisionar, publicar, configurar e manter
 - [docs/TESTES.md](docs/TESTES.md) — como rodar a suíte e o que ela cobre
+- [docs/FLUXO_DE_TRABALHO.md](docs/FLUXO_DE_TRABALHO.md) — branches `main`, `develop` e `features`, e como publicar

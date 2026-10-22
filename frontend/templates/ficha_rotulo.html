@@ -3,78 +3,40 @@
 {% block titulo %}{{ fichaAtual.nomeFicha }} — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
 
-<nav aria-label="Trilha" class="mb-2">
-  <ol class="breadcrumb small">
+<nav class="app-trilha" aria-label="Trilha">
+  <ol class="breadcrumb">
     <li class="breadcrumb-item"><a href="{% url 'listaFichas' %}">Fichas</a></li>
     <li class="breadcrumb-item active" aria-current="page">{{ fichaAtual.nomeFicha }}</li>
   </ol>
 </nav>
 
-<div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+<header class="app-cabecalho">
   <div>
-    <h1 class="h3 mb-1">{{ fichaAtual.nomeFicha }}</h1>
-    <p class="text-secondary mb-0">
+    <h1 class="app-titulo">{{ fichaAtual.nomeFicha }}</h1>
+    <p class="app-subtitulo">
       Cliente: <strong>{{ fichaAtual.cliente }}</strong> ·
       criada por {{ fichaAtual.autor.nome }} em {{ fichaAtual.dataCriacao|date:"d/m/Y" }}
       {% if fichaAtual.finalizada %}
-        <span class="badge text-bg-success ms-2">Finalizada</span>
+        <span class="app-status is-finalizada ms-2">Finalizada</span>
       {% else %}
-        <span class="badge text-bg-secondary ms-2">Em edição</span>
+        <span class="app-status ms-2">Em edição</span>
       {% endif %}
     </p>
   </div>
-  <div class="d-flex gap-2">
+  <div class="app-acoes">
     <form method="post" action="{% url 'atualizarFinalizada' pk=fichaAtual.pk %}">
       {% csrf_token %}
-      <button type="submit" class="btn btn-outline-secondary btn-sm">
+      <button type="submit" class="btn btn-outline-secondary">
         {% if fichaAtual.finalizada %}Reabrir ficha{% else %}Marcar como finalizada{% endif %}
       </button>
     </form>
-    <button type="button" id="botaoCopiar" class="btn btn-sm text-white"
-            style="background-color: var(--cor-primaria);"
+    <button type="button" id="botaoCopiar" class="btn btn-primario-instancia"
             data-rotulo-copiar aria-live="polite">Copiar conteúdo</button>
   </div>
-</div>
+</header>
 
-<div class="row g-3 mb-4">
-  <div class="col-12 col-lg-4">
-    <div class="card h-100">
-      <div class="card-body">
-        <h2 class="h6 text-secondary text-uppercase">Pesos</h2>
-        <dl class="row mb-0 small">
-          <dt class="col-7 fw-normal text-secondary">Peso de preparação</dt>
-          <dd class="col-5 text-end">{{ fichaAtual.pesoLiquidoPreparacao|floatformat:"-2" }} g</dd>
-          <dt class="col-7 fw-normal text-secondary">Peso total</dt>
-          <dd class="col-5 text-end">{{ fichaAtual.pesoTotal|floatformat:"-2" }} g</dd>
-          <dt class="col-7 fw-normal text-secondary">Porção (cliente)</dt>
-          <dd class="col-5 text-end">{{ fichaAtual.pesoPorcao|floatformat:"-2" }} g</dd>
-          <dt class="col-7 fw-normal text-secondary">Porção (Anvisa)</dt>
-          <dd class="col-5 text-end">{{ fichaAtual.pesoAnvisa|floatformat:"-2" }} g</dd>
-          <dt class="col-7 fw-normal text-secondary">Número de porções</dt>
-          <dd class="col-5 text-end">{{ numPorcoes }}</dd>
-        </dl>
-      </div>
-    </div>
-  </div>
-  <div class="col-12 col-lg-8">
-    <div class="card h-100">
-      <div class="card-body">
-        <h2 class="h6 text-secondary text-uppercase">Etapas da ficha</h2>
-        <div class="d-flex flex-wrap gap-2">
-          <a class="btn btn-outline-secondary btn-sm" href="{% url 'editarFicha1' fichaAtual.pk %}">1. Dados base</a>
-          <a class="btn btn-outline-secondary btn-sm" href="{% url 'editarFicha2' fichaAtual.pk %}">2. Receita</a>
-          <a class="btn btn-outline-secondary btn-sm" href="{% url 'editarFicha3' fichaAtual.pk %}">3. Tabela</a>
-        </div>
-        <hr>
-        <form method="post" action="{% url 'deletarFicha' fichaAtual.pk %}"
-              onsubmit="return confirm('Excluir a ficha “{{ fichaAtual.nomeFicha|escapejs }}”? Esta ação não pode ser desfeita.');">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-outline-danger btn-sm">Excluir ficha</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="app-detalhe">
+<div class="app-detalhe-principal">
 
 {% if conferencia.desatualizada %}
 <div class="alert alert-warning" role="alert">
@@ -94,8 +56,8 @@
   {% endif %}
   <details class="mb-2">
     <summary>Ver as diferenças ({{ conferencia.divergencias|length }})</summary>
-    <div class="table-responsive mt-2">
-      <table class="table table-sm mb-0 bg-white">
+    <div class="table-responsive app-painel mt-2">
+      <table class="table table-sm mb-0">
         <thead><tr><th>Nutriente</th><th class="text-end">No rótulo</th><th class="text-end">Recalculado</th></tr></thead>
         <tbody>
           {% for d in conferencia.divergencias %}
@@ -117,6 +79,7 @@
 </div>
 {% endif %}
 
+<div class="app-painel app-folha">
 {# ------- Bloco copiável: estrutura pensada para colar no Google Docs ------- #}
 <div id="conteudo-para-copiar">
 
@@ -212,6 +175,41 @@
            src="data:image/png;base64,{{ lupa_img }}" alt="Rotulagem frontal: alto em">
     </div>
   {% endif %}
+</div>
+</div>
+</div>
+
+<aside class="app-detalhe-lateral" aria-label="Dados da ficha">
+  <div class="card">
+    <div class="card-body">
+      <h2 class="app-painel-titulo">Pesos</h2>
+      <dl class="app-dados">
+        <div><dt>Peso de preparação</dt><dd>{{ fichaAtual.pesoLiquidoPreparacao|floatformat:"-2" }}<span class="app-unidade">g</span></dd></div>
+        <div><dt>Peso total</dt><dd>{{ fichaAtual.pesoTotal|floatformat:"-2" }}<span class="app-unidade">g</span></dd></div>
+        <div><dt>Porção (cliente)</dt><dd>{{ fichaAtual.pesoPorcao|floatformat:"-2" }}<span class="app-unidade">g</span></dd></div>
+        <div><dt>Porção (Anvisa)</dt><dd>{{ fichaAtual.pesoAnvisa|floatformat:"-2" }}<span class="app-unidade">g</span></dd></div>
+        <div><dt>Número de porções</dt><dd>{{ numPorcoes }}</dd></div>
+      </dl>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <h2 class="app-painel-titulo">Etapas da ficha</h2>
+      <ul class="app-etapas">
+        <li><a href="{% url 'editarFicha1' fichaAtual.pk %}">1. Dados base</a></li>
+        <li><a href="{% url 'editarFicha2' fichaAtual.pk %}">2. Receita</a></li>
+        <li><a href="{% url 'editarFicha3' fichaAtual.pk %}">3. Tabela</a></li>
+      </ul>
+      <div class="app-zona-perigo">
+        <form method="post" action="{% url 'deletarFicha' fichaAtual.pk %}"
+              onsubmit="return confirm('Excluir a ficha “{{ fichaAtual.nomeFicha|escapejs }}”? Esta ação não pode ser desfeita.');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline-danger btn-sm">Excluir ficha</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</aside>
 </div>
 
 <script src="{% static 'js/copiar-rotulo.js' %}"></script>

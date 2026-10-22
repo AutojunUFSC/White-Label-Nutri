@@ -115,3 +115,11 @@ def test_golden_unidades_batem_com_registro(golden):
             if len(linha) > 3 and linha[3] != unidade_por_rotulo[linha[0]]:
                 divergentes.add((linha[0], linha[3]))
     assert not divergentes, f"unidades divergentes do registro: {divergentes}"
+
+
+def test_grupos_do_cadastro_cobrem_cada_nutriente_uma_vez():
+    from apps.fichas.dominio.nutrientes import GRUPOS_CADASTRO, NUTRIENTES
+
+    chaves = [c for _, grupo in GRUPOS_CADASTRO for c in grupo]
+    assert len(chaves) == len(set(chaves))
+    assert set(chaves) == {n.chave for n in NUTRIENTES}

@@ -56,6 +56,7 @@ urlpatterns = [
     path("registrarIngrediente", views.registrar_ingrediente, name="registrarIngrediente"),
     path("editarIngrediente/<int:pk>", views.editar_ingrediente, name="editarIngrediente"),
     path("deletarIngrediente/<int:pk>", views.deletar_ingrediente, name="deletarIngrediente"),
+    path("lerRotuloIngrediente", views.ler_rotulo_ingrediente, name="lerRotuloIngrediente"),
     path("upload", views.upload, name="upload"),
     # Outros
     path("ajuda", views.ajuda, name="ajuda"),

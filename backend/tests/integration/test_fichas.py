@@ -577,3 +577,94 @@ def test_datas_usam_calendario_com_hoje_como_padrao(logado):
         corpo = logado.get(url).content.decode()
         assert 'type="date"' in corpo
         assert f'value="{hoje}"' in corpo
+
+
+# ------------------------------------------------------- leitura por foto
+
+
+def _foto():
+    import io
+
+    from PIL import Image
+
+    arquivo = io.BytesIO()
+    Image.new("RGB", (800, 600), "white").save(arquivo, format="JPEG")
+    arquivo.seek(0)
+    arquivo.name = "rotulo.jpg"
+    return arquivo
+
+
+RESPOSTA_GEMINI = """{
+  "e_tabela_nutricional": true, "porcao_g": 30, "nome": "Granola", "marca": "Mãe Terra",
+  "nutrientes": {"proteinas": {"por_100g": 10, "por_porcao": 3},
+                 "sodio": {"por_100g": 50, "por_porcao": 15}},
+  "avisos": []
+}"""
+
+
+def test_botao_de_foto_so_aparece_com_chave(logado, settings):
+    settings.GEMINI_API_KEY = ""
+    assert "Preencher a partir de foto" not in logado.get("/registrarIngrediente").content.decode()
+    settings.GEMINI_API_KEY = "chave-de-teste"
+    assert "Preencher a partir de foto" in logado.get("/registrarIngrediente").content.decode()
+
+
+def test_ler_rotulo_devolve_campos_para_o_formulario(logado, settings, monkeypatch):
+    from apps.fichas import leitura_rotulo
+
+    settings.GEMINI_API_KEY = "chave-de-teste"
+    monkeypatch.setattr(leitura_rotulo, "_chamar_gemini", lambda jpeg: RESPOSTA_GEMINI)
+    resp = logado.post("/lerRotuloIngrediente", {"foto": _foto()})
+    assert resp.status_code == 200
+    campos = resp.json()["campos"]
+    assert campos["qtdeDoIngrediente"] == 100
+    assert campos["proteinas"] == 10
+    assert campos["origemDosDados"] == "Mãe Terra"
+    assert not Ingrediente.objects.exists()  # só pré-preenche, não salva
+
+
+def test_ler_rotulo_sem_chave_responde_503(logado, settings):
+    settings.GEMINI_API_KEY = ""
+    assert logado.post("/lerRotuloIngrediente", {"foto": _foto()}).status_code == 503
+
+
+def test_ler_rotulo_com_falha_na_api_mostra_erro_amigavel(logado, settings, monkeypatch):
+    from apps.fichas import leitura_rotulo
+
+    def falhar(jpeg):
+        raise RuntimeError("timeout")
+
+    settings.GEMINI_API_KEY = "chave-de-teste"
+    monkeypatch.setattr(leitura_rotulo, "_chamar_gemini", falhar)
+    resp = logado.post("/lerRotuloIngrediente", {"foto": _foto()})
+    assert resp.status_code == 422
+    assert "não respondeu" in resp.json()["erro"]
+
+
+def test_ler_rotulo_exige_login(client):
+    assert client.post("/lerRotuloIngrediente", {"foto": _foto()}).status_code == 302
+
+
+def test_cadastro_de_ingrediente_agrupa_vitaminas_em_sequencia(logado):
+    corpo = logado.get("/registrarIngrediente").content.decode()
+    vitaminas = corpo.index(">Vitaminas<")
+    minerais = corpo.index(">Minerais<")
+    for campo in ("id_vitaminaARAE", "id_vitaminaD", "id_tiamina", "id_vitaminaB12"):
+        assert vitaminas < corpo.index(f'id="{campo}"') < minerais
+
+
+def test_adicionado_manualmente_saiu_da_tela_sem_perder_o_valor(logado, membro, ingrediente):
+    corpo = logado.get("/registrarIngrediente").content.decode()
+    assert "Adicionado manualmente" not in corpo
+    assert "tabela de origem" in corpo  # ajuda do Nº de referência
+
+    Ingrediente.objects.filter(pk=ingrediente.pk).update(addManualmente=False)
+    logado.post(
+        f"/editarIngrediente/{ingrediente.pk}",
+        {"autorIng": membro.pk, "nomeIng": "Farinha de trigo", "composicao": "",
+         "origemDosDados": "TACO", "qtdeDoIngrediente": 100, "numRef": 7,
+         "dataCriacao": "2024-01-10"},
+    )
+    ingrediente.refresh_from_db()
+    assert ingrediente.numRef == 7
+    assert ingrediente.addManualmente is False

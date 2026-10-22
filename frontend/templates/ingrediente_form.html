@@ -1,17 +1,40 @@
 {% extends "base.html" %}
+{% load static %}
 {% block titulo %}{% if ingrediente %}Editar{% else %}Novo{% endif %} ingrediente — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-1">{% if ingrediente %}Editar ingrediente{% else %}Novo ingrediente{% endif %}</h1>
-<p class="text-secondary">
-  Informe os nutrientes contidos na quantidade indicada — o sistema normaliza tudo para 100 g.
-</p>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">{% if ingrediente %}Editar ingrediente{% else %}Novo ingrediente{% endif %}</h1>
+    <p class="app-subtitulo">
+      Informe os nutrientes contidos na quantidade indicada — o sistema normaliza tudo para 100 g.
+    </p>
+  </div>
+</header>
+
+{% if leituraRotulo %}
+<div class="card mb-4 app-leitura-foto" data-leitura-rotulo data-url="{% url 'lerRotuloIngrediente' %}">
+  <div class="card-body">
+    <h2 class="app-painel-titulo mb-1">Preencher a partir de foto</h2>
+    <p class="app-painel-nota mb-3">
+      Fotografe a tabela nutricional inteira, reta e sem reflexo. Os campos lidos ficam
+      destacados — <strong>confira antes de salvar</strong>.
+    </p>
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+      <label class="btn btn-outline-primary mb-0" for="fotoRotulo">Escolher ou tirar foto</label>
+      <input class="visually-hidden" type="file" id="fotoRotulo" accept="image/*">
+      <span class="small text-secondary" data-leitura-status role="status" aria-live="polite"></span>
+    </div>
+    <ul class="small mt-2 mb-0 text-warning-emphasis" data-leitura-avisos></ul>
+  </div>
+</div>
+{% endif %}
 
 <form method="post" novalidate>
   {% csrf_token %}
   {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
 
-  <div class="card mb-3">
-    <div class="card-header bg-white"><h2 class="h6 mb-0">Identificação</h2></div>
+  <div class="card mb-4">
+    <div class="card-header"><h2>Identificação</h2></div>
     <div class="card-body">
       <div class="row">
         <div class="col-12 col-md-6">{% include "_campo.html" with campo=form.nomeIng %}</div>
@@ -20,43 +43,39 @@
         <div class="col-12 col-md-4">{% include "_campo.html" with campo=form.origemDosDados %}</div>
         <div class="col-6 col-md-4">{% include "_campo.html" with campo=form.qtdeDoIngrediente %}</div>
         <div class="col-6 col-md-4">{% include "_campo.html" with campo=form.dataCriacao %}</div>
-        <div class="col-6 col-md-4">{% include "_campo.html" with campo=form.numRef %}</div>
-        <div class="col-6 col-md-4 d-flex align-items-center">
-          <div class="form-check">
-            {{ form.addManualmente }}
-            <label class="form-check-label" for="{{ form.addManualmente.id_for_label }}">
-              {{ form.addManualmente.label }}
-            </label>
-          </div>
-        </div>
+        <div class="col-12 col-md-4">{% include "_campo.html" with campo=form.numRef %}</div>
       </div>
     </div>
   </div>
 
-  <div class="card mb-3">
-    <div class="card-header bg-white">
-      <h2 class="h6 mb-0">Composição nutricional</h2>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h2>Composição nutricional</h2>
     </div>
     <div class="card-body">
-      <div class="row">
-        {% for item in camposNutrientes %}
-          <div class="col-6 col-md-4 col-lg-3">
-            <div class="mb-3">
-              <label class="form-label small" for="{{ item.campo.id_for_label }}">
-                {{ item.rotulo }} <span class="text-secondary">({{ item.unidade }})</span>
-              </label>
-              {{ item.campo }}
-              {% for erro in item.campo.errors %}<div class="invalid-feedback d-block">{{ erro }}</div>{% endfor %}
+      {% for grupo in camposNutrientes %}
+        <h3 class="app-grupo-titulo">{{ grupo.titulo }}</h3>
+        <div class="row">
+          {% for item in grupo.campos %}
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="mb-3">
+                <label class="form-label small" for="{{ item.campo.id_for_label }}">
+                  {{ item.rotulo }} <span class="text-secondary">({{ item.unidade }})</span>
+                </label>
+                {{ item.campo }}
+                {% for erro in item.campo.errors %}<div class="invalid-feedback d-block">{{ erro }}</div>{% endfor %}
+              </div>
             </div>
-          </div>
-        {% endfor %}
-      </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
     </div>
   </div>
 
-  <div class="d-flex gap-2">
+  <div class="app-form-acoes">
     <button class="btn btn-primario-instancia" type="submit">Salvar ingrediente</button>
     <a class="btn btn-outline-secondary" href="{% url 'listaIngredientes' %}">Cancelar</a>
   </div>
 </form>
+{% if leituraRotulo %}<script src="{% static 'js/leitura-rotulo.js' %}"></script>{% endif %}
 {% endblock %}
