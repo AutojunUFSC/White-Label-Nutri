@@ -19,21 +19,29 @@ Django 5.2 LTS · PostgreSQL · Bootstrap 5 · pytest — detalhes em
 
 Requisitos: **Python 3.12+** e **PostgreSQL 14+**.
 
+**1. Prepare o ambiente**
 ```bash
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements-dev.txt
-
-createdb nutri                                      # banco local desta instância
-export DATABASE_URL=postgres://postgres:senha@localhost:5432/nutri
-python backend/manage.py migrate
-python backend/manage.py bootstrap_instancia --nome "SUA-EMPRESA" \
-    --admin admin --email admin@exemplo.com --chave CHAVE-LOCAL
-python backend/manage.py runserver
 ```
 
-A aplicação sobe em <http://localhost:8000>; entre com o usuário criado pelo
-`bootstrap_instancia`. As variáveis de ambiente podem ficar num arquivo `.env` na
-raiz (modelo em `.env.example`) em vez de exportadas na sessão.
+**2. Aponte para o seu PostgreSQL.** Copie `.env.example` para `.env` e ajuste a
+`DATABASE_URL` com o host, a **porta** e a senha da sua instalação (o padrão é `5432`,
+mas pode ser outra):
+```
+DATABASE_URL=postgres://postgres:SUA-SENHA@localhost:5432/nutri
+```
+Se a senha tiver caracteres como `@`, `#` ou `/`, codifique-os na URL (`@` vira `%40`).
+
+**3. Crie a empresa e suba o sistema.** O script cria o banco, aplica as migrações,
+configura a instância e oferece subir o servidor:
+```bash
+python scripts/provisionar_empresa.py
+```
+
+A aplicação sobe em <http://localhost:8000>; entre com o administrador que você definiu
+nas perguntas. Nas próximas vezes, `python scripts/provisionar_empresa.py --rodar SEU-IDENTIFICADOR`.
+Detalhes do script em [Provisionar uma empresa nova](#provisionar-uma-empresa-nova).
 
 Para popular a base de ingredientes, use a tela **Ingredientes → Importar TXT** com
 um arquivo da TACO (TXT separado por TAB), ou cadastre um a um.
@@ -53,7 +61,7 @@ própria), aplica as migrações e configura a instância:
 python scripts/provisionar_empresa.py
 ```
 
-Ele pergunta nome, identificador, domínio, administrador (usuário, e-mail e senha), cor
+Requer o ambiente e o `.env` de [Rodando localmente](#rodando-localmente). Ele pergunta nome, identificador, domínio, administrador (usuário, e-mail e senha), cor
 primária, chave de cadastro e ano de corte, mostra um resumo e só cria depois da sua
 confirmação. Cada pergunta tem um padrão; no caso comum basta informar nome, e-mail e senha.
 
