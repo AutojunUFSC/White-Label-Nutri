@@ -6,46 +6,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block titulo %}{{ instancia_nome }}{% endblock %}</title>
   <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+  <link rel="preload" href="{% static 'vendor/dm-sans/dm-sans-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
   <link href="{% static 'vendor/bootstrap/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'css/app.css' %}" rel="stylesheet">
   <style>:root { --cor-primaria: {{ instancia_cor }}; }</style>
 </head>
-<body class="bg-light">
+<body class="{% if user.is_authenticated %}app-com-menu{% else %}app-publico{% endif %}">
 {% if user.is_authenticated %}
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--cor-primaria);">
-  <div class="container">
-    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'listaFichas' %}">
-      {% if instancia_logotipo_url %}<img src="{{ instancia_logotipo_url }}" alt="" height="28">{% endif %}
-      {{ instancia_nome }}
+{% with rota=request.resolver_match.url_name %}
+<aside class="app-lateral">
+  <div class="app-lateral-topo">
+    <a class="app-marca" href="{% url 'listaFichas' %}">
+      {% if instancia_logotipo_url %}<img src="{{ instancia_logotipo_url }}" alt="" height="28">
+      {% else %}<span class="app-monograma" aria-hidden="true">{{ instancia_nome|slice:":1" }}</span>{% endif %}
+      <span class="app-marca-nome">{{ instancia_nome }}</span>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-      <span class="navbar-toggler-icon"></span>
+    <button class="app-menu-botao" type="button" data-bs-toggle="collapse" data-bs-target="#nav"
+            aria-controls="nav" aria-expanded="false" aria-label="Abrir menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
     </button>
-    <div class="collapse navbar-collapse" id="nav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="{% url 'listaFichas' %}">Fichas</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'listaIngredientes' %}">Ingredientes</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'listaMembros' %}">Membros</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'ajuda' %}">Ajuda</a></li>
-      </ul>
-      <ul class="navbar-nav">
-        <li class="nav-item"><span class="navbar-text me-3">{{ user.username }}</span></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'logoutUser' %}">Sair</a></li>
-      </ul>
-    </div>
   </div>
-</nav>
+  <nav class="collapse app-nav" id="nav" aria-label="Principal">
+    <ul>
+      <li>
+        <a class="app-nav-link{% if rota in 'listaFichas registrarFicha1 editarFicha1 editarFicha2 editarFicha3 fichaX editarItemReceita' %} is-active{% endif %}"
+           {% if rota in 'listaFichas registrarFicha1 editarFicha1 editarFicha2 editarFicha3 fichaX editarItemReceita' %}aria-current="page"{% endif %}
+           href="{% url 'listaFichas' %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>
+          Fichas
+        </a>
+      </li>
+      <li>
+        <a class="app-nav-link{% if rota in 'listaIngredientes registrarIngrediente editarIngrediente upload' %} is-active{% endif %}"
+           {% if rota in 'listaIngredientes registrarIngrediente editarIngrediente upload' %}aria-current="page"{% endif %}
+           href="{% url 'listaIngredientes' %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7ZM8.64 14l-2.05-2.04M15.34 15l-2.46-2.46"/><path d="M22 9s-1.33-2-3.5-2C16.86 7 15 9 15 9s1.33 2 3.5 2S22 9 22 9ZM15 2s-2 1.33-2 3.5S15 9 15 9s2-1.84 2-3.5C17 3.33 15 2 15 2Z"/></svg>
+          Ingredientes
+        </a>
+      </li>
+      <li>
+        <a class="app-nav-link{% if rota == 'listaMembros' %} is-active{% endif %}"
+           {% if rota == 'listaMembros' %}aria-current="page"{% endif %}
+           href="{% url 'listaMembros' %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Membros
+        </a>
+      </li>
+      <li>
+        <a class="app-nav-link{% if rota == 'ajuda' %} is-active{% endif %}"
+           {% if rota == 'ajuda' %}aria-current="page"{% endif %}
+           href="{% url 'ajuda' %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+          Ajuda
+        </a>
+      </li>
+    </ul>
+    <div class="app-usuario">
+      <span class="app-usuario-nome">
+        <span class="app-avatar" aria-hidden="true">{{ user.username|slice:":1" }}</span>
+        <span>{{ user.username }}</span>
+      </span>
+      <a class="app-sair" href="{% url 'logoutUser' %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Sair
+      </a>
+    </div>
+  </nav>
+</aside>
+{% endwith %}
 {% endif %}
-<main class="container py-4">
+<main class="app-canvas">
+  <div class="app-conteudo{% block conteudo_classe %}{% endblock %}">
   {% if messages %}
+  <div class="app-mensagens">
     {% for message in messages %}
       <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
         {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
       </div>
     {% endfor %}
+  </div>
   {% endif %}
   {% block conteudo %}{% endblock %}
+  </div>
 </main>
 <script src="{% static 'vendor/bootstrap/popper.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/bootstrap.min.js' %}"></script>

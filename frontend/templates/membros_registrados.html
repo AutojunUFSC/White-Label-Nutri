@@ -1,10 +1,15 @@
 {% extends "base.html" %}
 {% block titulo %}Membros — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-3">Membros</h1>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">Membros</h1>
+    <p class="app-subtitulo">Quem tem acesso às fichas e ingredientes desta instância.</p>
+  </div>
+</header>
 
-<div class="table-responsive mb-4">
-  <table class="table table-hover align-middle bg-white">
+<div class="table-responsive app-painel">
+  <table class="table table-hover align-middle">
     <caption class="visually-hidden">Membros cadastrados na instância</caption>
     <thead>
       <tr>
@@ -16,28 +21,28 @@
     <tbody>
       {% for membro in membros %}
       <tr>
-        <td>{{ membro.nome }}</td>
-        <td>{{ membro.semestre }}</td>
-        <td>{{ membro.email }}</td>
+        <td class="fw-medium">{{ membro.nome }}</td>
+        <td class="text-secondary">{{ membro.semestre }}</td>
+        <td class="text-secondary">{{ membro.email }}</td>
       </tr>
       {% empty %}
-      <tr><td colspan="3" class="text-center text-secondary py-4">Nenhum membro cadastrado.</td></tr>
+      <tr><td colspan="3" class="app-vazio">Nenhum membro cadastrado.</td></tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
 
 {% if ehAdmin %}
-<h2 class="h5 mb-3">Administração</h2>
-<div class="row g-3">
+<h2 class="app-secao">Administração</h2>
+<div class="row g-4">
   <div class="col-12 col-lg-4">
     <div class="card h-100">
-      <div class="card-header bg-white"><h3 class="h6 mb-0">Chave de cadastro</h3></div>
+      <div class="card-header"><h3>Chave de cadastro</h3></div>
       <div class="card-body d-flex flex-column">
-        <p class="small mb-3">
-          Chave atual:
+        <div class="app-chave mb-3">
+          <span>Chave atual</span>
           <code class="user-select-all">{{ chave|default:"— nenhuma definida —" }}</code>
-        </p>
+        </div>
         <form method="post" action="{% url 'mudaChave' %}" class="mt-auto">
           {% csrf_token %}
           {% include "_campo.html" with campo=formChave.key %}
@@ -49,13 +54,13 @@
 
   <div class="col-12 col-lg-4">
     <div class="card h-100">
-      <div class="card-header bg-white"><h3 class="h6 mb-0">Alterar senha</h3></div>
+      <div class="card-header"><h3>Alterar senha</h3></div>
       <div class="card-body d-flex flex-column">
         <form method="post" action="{% url 'trocaSenha' %}" class="d-flex flex-column h-100">
           {% csrf_token %}
           {% include "_campo.html" with campo=formTrocaSenha.usuario %}
           {% include "_campo.html" with campo=formTrocaSenha.nova_senha %}
-          <button class="btn btn-outline-secondary btn-sm mt-auto" type="submit">
+          <button class="btn btn-outline-secondary btn-sm mt-auto align-self-start" type="submit">
             Alterar senha deste usuário
           </button>
         </form>
@@ -65,21 +70,21 @@
 
   <div class="col-12 col-lg-4">
     <div class="card h-100">
-      <div class="card-header bg-white"><h3 class="h6 mb-0">Excluir membro</h3></div>
+      <div class="card-header"><h3>Excluir membro</h3></div>
       <div class="card-body d-flex flex-column">
         <form method="post" action="{% url 'deletaMembro' %}" class="d-flex flex-column h-100"
               onsubmit="return confirm('Excluir este membro? As fichas e ingredientes serão transferidos.');">
           {% csrf_token %}
           {% include "_campo.html" with campo=formApagaMembro.membroExcluido %}
           {% include "_campo.html" with campo=formApagaMembro.membroDestino %}
-          <button class="btn btn-outline-danger btn-sm mt-auto" type="submit">Excluir membro</button>
+          <button class="btn btn-outline-danger btn-sm mt-auto align-self-start" type="submit">Excluir membro</button>
         </form>
       </div>
     </div>
   </div>
 </div>
 {% else %}
-<div class="alert alert-secondary">
+<div class="alert alert-secondary mt-4">
   Para ver ou alterar a chave de cadastro e redefinir senhas, acesse esta página com um
   usuário administrador da instância.
 </div>

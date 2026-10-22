@@ -1,32 +1,39 @@
 {% extends "base.html" %}
+{% load static %}
 {% block titulo %}Cadastro — {{ instancia_nome }}{% endblock %}
+{% block conteudo_classe %} app-conteudo-entrada{% endblock %}
 {% block conteudo %}
-<div class="row justify-content-center">
-  <div class="col-12 col-md-7 col-lg-5">
-    <div class="card shadow-sm mt-4">
-      <div class="card-body p-4">
-        <h1 class="h4 mb-1">Criar conta</h1>
-        <p class="text-secondary small">
-          O cadastro exige a chave de acesso — peça ao administrador da {{ instancia_nome }}.
-        </p>
-        <form method="post" novalidate>
-          {% csrf_token %}
-          {% if form.non_field_errors %}
-            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-          {% endif %}
-          {% include "_campo.html" with campo=form.nome %}
-          {% include "_campo.html" with campo=form.semestre %}
-          {% include "_campo.html" with campo=form.email %}
-          {% include "_campo.html" with campo=form.senha1 %}
-          {% include "_campo.html" with campo=form.senha2 %}
-          {% include "_campo.html" with campo=form.chave %}
-          <div class="d-flex gap-2">
-            <button class="btn btn-primario-instancia" type="submit">Concluir cadastro</button>
-            <a class="btn btn-outline-secondary" href="{% url 'loginUser' %}">Cancelar</a>
-          </div>
-        </form>
-      </div>
+<div class="entrada">
+  {% include "_vitrine_entrada.html" %}
+
+  <section class="entrada-form">
+    <div class="entrada-form-caixa entrada-form-larga">
+      <h1 class="app-titulo mb-1">Criar conta</h1>
+      <p class="app-subtitulo mb-4">
+        O cadastro exige a chave de acesso — peça ao administrador da {{ instancia_nome }}.
+      </p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+          <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <div class="row">
+          <div class="col-12 col-sm-8">{% include "_campo.html" with campo=form.nome %}</div>
+          <div class="col-12 col-sm-4">{% include "_campo.html" with campo=form.semestre %}</div>
+        </div>
+        {% include "_campo.html" with campo=form.email %}
+        <div class="row">
+          <div class="col-12 col-sm-6">{% include "_campo.html" with campo=form.senha1 %}</div>
+          <div class="col-12 col-sm-6">{% include "_campo.html" with campo=form.senha2 %}</div>
+        </div>
+        {% include "_campo.html" with campo=form.chave %}
+        <div class="app-form-acoes">
+          <button class="btn btn-primario-instancia" type="submit">Concluir cadastro</button>
+          <a class="btn btn-outline-secondary" href="{% url 'loginUser' %}">Cancelar</a>
+        </div>
+      </form>
     </div>
-  </div>
+  </section>
 </div>
+<script src="{% static 'js/entrada.js' %}"></script>
 {% endblock %}

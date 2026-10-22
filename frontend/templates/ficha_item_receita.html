@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block titulo %}Editar item — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-1">Editar item da receita</h1>
-<p class="text-secondary">{{ item.ingrediente.nome_exibicao }} · ficha {{ fichaAtual.nomeFicha }}</p>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">Editar item da receita</h1>
+    <p class="app-subtitulo">{{ item.ingrediente.nome_exibicao }} · ficha {{ fichaAtual.nomeFicha }}</p>
+  </div>
+</header>
 
 <div class="card">
   <div class="card-body">
@@ -14,7 +18,7 @@
         <div class="col-12 col-md-6">{% include "_campo.html" with campo=form.pesoBruto %}</div>
         <div class="col-12 col-md-6">{% include "_campo.html" with campo=form.pesoLiquido %}</div>
       </div>
-      <div class="d-flex gap-2">
+      <div class="app-form-acoes">
         <button class="btn btn-primario-instancia" type="submit">Salvar item</button>
         <a class="btn btn-outline-secondary" href="{% url 'editarFicha2' fichaAtual.pk %}">Cancelar</a>
       </div>

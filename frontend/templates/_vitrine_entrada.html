@@ -1,0 +1,41 @@
+{# Painel decorativo das telas de entrada: um rótulo de exemplo que reage ao mouse (js/entrada.js) #}
+<section class="entrada-vitrine" data-vitrine aria-hidden="true">
+  <div class="entrada-vitrine-topo">
+    {% if instancia_logotipo_url %}
+      <span class="entrada-logo"><img src="{{ instancia_logotipo_url }}" alt=""></span>
+    {% else %}
+      <span class="app-monograma">{{ instancia_nome|slice:":1" }}</span>
+    {% endif %}
+    <span>{{ instancia_nome }}</span>
+  </div>
+
+  <div class="entrada-palco">
+    <div class="rd-ficha" style="--prof: .55">
+      <p class="rd-ficha-titulo">Ficha técnica</p>
+      <p class="rd-ficha-nome">Bolo de cenoura</p>
+      <ul>
+        <li><span>Cenoura</span><span>300 g</span></li>
+        <li><span>Açúcar</span><span>300 g</span></li>
+        <li><span>Farinha de trigo</span><span>240 g</span></li>
+        <li><span>Ovos</span><span>180 g</span></li>
+        <li><span>Óleo</span><span>180 g</span></li>
+      </ul>
+    </div>
+
+    <div class="rd-rotulo" style="--prof: 1">
+      <p class="rd-cab">INFORMAÇÃO NUTRICIONAL</p>
+      <p class="rd-porcao">Porção: 60 g (1 fatia média)</p>
+      <div class="rd-linha rd-linha-cab"><span></span><span>60 g</span><span>%VD*</span></div>
+      <div class="rd-linha" style="--i: 0; --vd: 13"><span>Valor energético</span><span><b data-alvo="256">256</b> kcal</span><span class="rd-vd"><i></i><b data-alvo="13">13</b></span></div>
+      <div class="rd-linha" style="--i: 1; --vd: 11"><span>Carboidratos</span><span><b data-alvo="32">32</b> g</span><span class="rd-vd"><i></i><b data-alvo="11">11</b></span></div>
+      <div class="rd-linha" style="--i: 2; --vd: 6"><span>Proteínas</span><span><b data-alvo="3.1" data-casas="1">3,1</b> g</span><span class="rd-vd"><i></i><b data-alvo="6">6</b></span></div>
+      <div class="rd-linha" style="--i: 3; --vd: 20"><span>Gorduras totais</span><span><b data-alvo="13">13</b> g</span><span class="rd-vd"><i></i><b data-alvo="20">20</b></span></div>
+      <div class="rd-linha rd-sub" style="--i: 4; --vd: 16"><span>Saturadas</span><span><b data-alvo="3.3" data-casas="1">3,3</b> g</span><span class="rd-vd"><i></i><b data-alvo="16">16</b></span></div>
+      <div class="rd-linha" style="--i: 5; --vd: 5"><span>Fibra alimentar</span><span><b data-alvo="1.2" data-casas="1">1,2</b> g</span><span class="rd-vd"><i></i><b data-alvo="5">5</b></span></div>
+      <div class="rd-linha" style="--i: 6; --vd: 5"><span>Sódio</span><span><b data-alvo="94">94</b> mg</span><span class="rd-vd"><i></i><b data-alvo="5">5</b></span></div>
+      <p class="rd-nota">*Percentual de valores diários fornecidos pela porção.</p>
+    </div>
+  </div>
+
+  <p class="entrada-vitrine-frase">Da receita ao rótulo nutricional no padrão ANVISA, em três etapas.</p>
+</section>

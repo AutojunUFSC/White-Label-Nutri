@@ -1,37 +1,33 @@
 {% extends "base.html" %}
+{% load static %}
 {% block titulo %}Entrar — {{ instancia_nome }}{% endblock %}
+{% block conteudo_classe %} app-conteudo-entrada{% endblock %}
 {% block conteudo %}
-<div class="row justify-content-center">
-  <div class="col-12 col-sm-8 col-md-5 col-lg-4">
-    <div class="card shadow-sm mt-5">
-      <div class="card-body p-4">
-        {% if instancia_logotipo_url %}
-          <div class="text-center mb-3">
-            <img src="{{ instancia_logotipo_url }}" alt="{{ instancia_nome }}"
-                 style="max-height:64px; max-width:100%">
-          </div>
-        {% endif %}
-        <h1 class="h4 mb-4 text-center">{{ instancia_nome }}</h1>
-        <form method="post" novalidate>
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label" for="id_username">{{ form.username.label }}</label>
-            <input class="form-control" type="text" name="username" id="id_username" required autofocus>
-          </div>
-          <div class="mb-3">
-            <label class="form-label" for="id_password">{{ form.password.label }}</label>
-            <input class="form-control" type="password" name="password" id="id_password" required>
-          </div>
-          <button class="btn w-100 text-white" style="background-color: var(--cor-primaria);" type="submit">Entrar</button>
-        </form>
-        <p class="text-center text-secondary small mt-3 mb-1">
-          Não tem uma conta? <a href="{% url 'registrarMembro' %}">Cadastre-se</a>
-        </p>
-        <p class="text-center text-secondary small mb-0">
-          Esqueceu a senha? Peça a redefinição a um administrador da {{ instancia_nome }}.
-        </p>
+<div class="entrada">
+  {% include "_vitrine_entrada.html" %}
+
+  <section class="entrada-form">
+    <div class="entrada-form-caixa">
+      <h1 class="app-titulo mb-1">Entrar</h1>
+      <p class="app-subtitulo mb-4">Use seu usuário da {{ instancia_nome }}.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label" for="id_username">{{ form.username.label }}</label>
+          <input class="form-control" type="text" name="username" id="id_username" required autofocus>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" for="id_password">{{ form.password.label }}</label>
+          <input class="form-control" type="password" name="password" id="id_password" required>
+        </div>
+        <button class="btn btn-primario-instancia w-100" type="submit">Entrar</button>
+      </form>
+      <div class="app-entrada-rodape">
+        <p>Não tem uma conta? <a href="{% url 'registrarMembro' %}">Cadastre-se</a></p>
+        <p>Esqueceu a senha? Peça a redefinição a um administrador da {{ instancia_nome }}.</p>
       </div>
     </div>
-  </div>
+  </section>
 </div>
+<script src="{% static 'js/entrada.js' %}"></script>
 {% endblock %}

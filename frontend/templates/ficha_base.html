@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block titulo %}{% if fichaAtual %}Editar ficha{% else %}Nova ficha{% endif %} — {{ instancia_nome }}{% endblock %}
 {% block conteudo %}
-<h1 class="h3 mb-1">{% if fichaAtual %}Editar dados base{% else %}Nova ficha técnica{% endif %}</h1>
-<p class="text-secondary">Informe os dados gerais da preparação. Os pesos alimentam todo o cálculo nutricional.</p>
+<header class="app-cabecalho">
+  <div>
+    <h1 class="app-titulo">{% if fichaAtual %}Editar dados base{% else %}Nova ficha técnica{% endif %}</h1>
+    <p class="app-subtitulo">Informe os dados gerais da preparação. Os pesos alimentam todo o cálculo nutricional.</p>
+  </div>
+</header>
 
 {% include "_wizard.html" %}
 
@@ -13,11 +17,13 @@
       {% if form.non_field_errors %}
         <div class="alert alert-danger">{{ form.non_field_errors }}</div>
       {% endif %}
+      <h2 class="app-grupo-titulo">Identificação</h2>
       <div class="row">
         <div class="col-12 col-md-6">{% include "_campo.html" with campo=form.autor %}</div>
         <div class="col-12 col-md-6">{% include "_campo.html" with campo=form.cliente %}</div>
       </div>
       {% include "_campo.html" with campo=form.nomeFicha %}
+      <h2 class="app-grupo-titulo">Pesos e porção</h2>
       <div class="row">
         <div class="col-12 col-md-4">{% include "_campo.html" with campo=form.pesoTotal %}</div>
         <div class="col-12 col-md-4">{% include "_campo.html" with campo=form.pesoPorcao %}</div>
@@ -27,7 +33,7 @@
         <div class="col-12 col-md-6">{% include "_campo.html" with campo=form.medCaseiraPorcao %}</div>
         <div class="col-12 col-md-6">{% include "_campo.html" with campo=form.dataCriacao %}</div>
       </div>
-      <div class="d-flex gap-2 mt-3">
+      <div class="app-form-acoes">
         <button class="btn btn-primario-instancia" type="submit">
           {% if fichaAtual %}Salvar e continuar{% else %}Criar ficha e continuar{% endif %}
         </button>
