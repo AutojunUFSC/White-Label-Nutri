@@ -59,6 +59,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "apps.plataforma.context_processors.instancia",
+                "apps.fichas.context_processors.tour",
             ],
         },
     },

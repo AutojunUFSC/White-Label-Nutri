@@ -90,7 +90,9 @@
   {% block conteudo %}{% endblock %}
   </div>
 </main>
+{% if tour_presente %}{% include "_tour.html" %}{% endif %}
 <script src="{% static 'vendor/bootstrap/popper.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/bootstrap.min.js' %}"></script>
+{% if tour_presente %}<script src="{% static 'js/tour.js' %}"></script>{% endif %}
 </body>
 </html>

@@ -70,11 +70,27 @@ vez (BR-023).
   de cadastro e permite trocá-la, redefinir a senha de um membro e excluir membros
   transferindo a autoria das fichas e ingredientes.
 - **`/registrarMembro`** — auto-cadastro com a chave da instância.
-- **`/ajuda`** — instruções de uso para a equipe.
+- **`/ajuda`** — instruções de uso para a equipe e o botão **Ver o tour de novo**.
 - **`/admin/`** — Django admin, restrito a superusuários; é onde se edita a
   **Configuração da instância** (nome, cor, ano de corte) e se envia o logotipo, com
   prévia e opção de remover. O logotipo aparece na barra superior e na tela de login,
   servido por `/branding/logotipo`.
+
+## Tour de boas-vindas
+
+Quem entra pela primeira vez vê uma janela com passos curtos: ingredientes, criação da
+ficha, os pesos da etapa 1, o rótulo final e onde tirar dúvidas. Administradores ganham um
+passo extra sobre **Membros** e a chave de cadastro. O texto é o mesmo para toda empresa;
+só o nome vem da configuração da instância (`frontend/templates/_tour.html`).
+
+- **Quando abre sozinho:** no primeiro login do usuário. O sistema usa o `last_login` do
+  Django — vazio antes do primeiro acesso — e guarda uma marca na sessão que é consumida
+  na primeira tela exibida, então ele não volta a abrir sozinho. Quem já usava o sistema
+  antes não vê o tour, e nenhuma migração é necessária.
+- **Como rever:** botão **Ver o tour de novo** na página de Ajuda.
+- **Navegação:** botões Anterior, Próximo e Pular, e as setas do teclado.
+- **Código:** `apps/fichas/context_processors.py` (decide quando carregar),
+  `frontend/static/js/tour.js` e os estilos `.tour-*` em `app.css`.
 
 As capturas completas de cada fluxo estão em `docs/imagens/criacao-receita/` e
 `docs/imagens/cadastro-ingrediente/`, com legenda no `LEIA-ME.md` de cada pasta.

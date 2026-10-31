@@ -921,3 +921,17 @@ textarea.form-control { min-height: 96px; }
   .rd-vd i { transition: none; transform: none; }
   .btn:active { transform: none; }
 }
+
+/* ---------- Tour de boas-vindas -------------------------------------------- */
+.tour .modal-header { border-bottom: 0; padding-bottom: 0; }
+.tour .modal-footer { border-top: 0; }
+.tour-contagem { margin: 0; font-size: var(--fs-small); font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.tour-titulo { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 4px 0 12px; }
+.tour-passo p { color: #2b2e31; line-height: 1.55; margin: 0 0 10px; }
+.tour-passo .tour-dica { padding: 10px 12px; background: var(--tint-50); border: 1px solid var(--tint-200); border-radius: var(--radius-control); font-size: 13px; color: var(--hue-ink); }
+.tour-pontos { display: flex; gap: 6px; margin: 20px 0 0; padding: 0; list-style: none; }
+.tour-pontos li { width: 8px; height: 8px; border-radius: 4px; background: var(--control); transition: width .2s ease, background-color .2s ease; }
+.tour-pontos li.is-ativo { width: 22px; background: var(--hue); }
+@media (prefers-reduced-motion: reduce) {
+  .tour-pontos li { transition: none; }
+}
