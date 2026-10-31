@@ -1,12 +1,17 @@
+from django.urls import reverse
+
+from apps.fichas.tour import passos
 from apps.fichas.views import SESSAO_TOUR, eh_administrador
+from apps.plataforma.context_processors import instancia
 
 
 def tour(request):
-    """Tour de boas-vindas: abre sozinho no primeiro acesso e sob demanda na Ajuda.
+    """Entrega o roteiro do tour de boas-vindas quando ele pode começar.
 
-    A marca da sessão é consumida na primeira tela renderizada depois do login, então
-    o tour não volta a abrir sozinho. Fora dessas duas situações o contexto fica vazio
-    e o template não carrega nem o HTML nem o script do tour.
+    Isso acontece no primeiro acesso (a marca da sessão é consumida na primeira tela
+    exibida depois do login, então o tour não volta a começar sozinho) e na página de
+    Ajuda, onde o botão "Ver o tour de novo" o reinicia. Fora daí o contexto fica vazio:
+    o script do tour só retoma um passeio que já começou, guardado na aba do navegador.
     """
     usuario = getattr(request, "user", None)
     if usuario is None or not usuario.is_authenticated:
@@ -16,7 +21,9 @@ def tour(request):
     if not (automatico or rota == "ajuda"):
         return {}
     return {
-        "tour_presente": True,
-        "tour_automatico": automatico,
-        "tour_administrador": eh_administrador(usuario),
+        "tour_dados": {
+            "automatico": automatico,
+            "inicio": reverse("listaFichas"),
+            "passos": passos(instancia(request)["instancia_nome"], eh_administrador(usuario)),
+        }
     }
