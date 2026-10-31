@@ -4,6 +4,7 @@ on:
   push:
     branches: ["**"]
   pull_request:
+  workflow_dispatch: # permite rodar a suíte à mão (aba Actions → Run workflow)
 
 jobs:
   testes:
