@@ -58,6 +58,10 @@ from apps.plataforma.models import ConfiguracaoInstancia
 
 # ---------------------------------------------------------------- autenticação
 
+# Marca na sessão que o próximo carregamento de tela abre o tour de boas-vindas
+# (consumida por context_processors.tour).
+SESSAO_TOUR = "mostrar_tour"
+
 
 def login_user(request):
     logout(request)  # BR-027
@@ -68,7 +72,11 @@ def login_user(request):
             password=form.cleaned_data["password"],
         )
         if user is not None:
+            # last_login só é preenchido pelo login(); quem nunca entrou vê o tour.
+            primeiro_acesso = user.last_login is None
             login(request, user)
+            if primeiro_acesso:
+                request.session[SESSAO_TOUR] = True
             return redirect("listaFichas")
         messages.error(request, "Não foi possível fazer login")
     return render(request, "login.html", {"form": form})

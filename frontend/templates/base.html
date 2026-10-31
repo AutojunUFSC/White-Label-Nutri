@@ -11,7 +11,7 @@
   <link href="{% static 'css/app.css' %}" rel="stylesheet">
   <style>:root { --cor-primaria: {{ instancia_cor }}; }</style>
 </head>
-<body class="{% if user.is_authenticated %}app-com-menu{% else %}app-publico{% endif %}">
+<body class="{% if user.is_authenticated %}app-com-menu{% else %}app-publico{% endif %}" data-rota="{{ request.resolver_match.url_name }}">
 {% if user.is_authenticated %}
 {% with rota=request.resolver_match.url_name %}
 <aside class="app-lateral">
@@ -31,7 +31,7 @@
       <li>
         <a class="app-nav-link{% if rota in 'listaFichas registrarFicha1 editarFicha1 editarFicha2 editarFicha3 fichaX editarItemReceita' %} is-active{% endif %}"
            {% if rota in 'listaFichas registrarFicha1 editarFicha1 editarFicha2 editarFicha3 fichaX editarItemReceita' %}aria-current="page"{% endif %}
-           href="{% url 'listaFichas' %}">
+           href="{% url 'listaFichas' %}" data-tour="nav-fichas">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></svg>
           Fichas
         </a>
@@ -39,7 +39,7 @@
       <li>
         <a class="app-nav-link{% if rota in 'listaIngredientes registrarIngrediente editarIngrediente upload' %} is-active{% endif %}"
            {% if rota in 'listaIngredientes registrarIngrediente editarIngrediente upload' %}aria-current="page"{% endif %}
-           href="{% url 'listaIngredientes' %}">
+           href="{% url 'listaIngredientes' %}" data-tour="nav-ingredientes">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.27 21.7s9.87-3.5 12.73-6.36a4.5 4.5 0 0 0-6.36-6.37C5.77 11.84 2.27 21.7 2.27 21.7ZM8.64 14l-2.05-2.04M15.34 15l-2.46-2.46"/><path d="M22 9s-1.33-2-3.5-2C16.86 7 15 9 15 9s1.33 2 3.5 2S22 9 22 9ZM15 2s-2 1.33-2 3.5S15 9 15 9s2-1.84 2-3.5C17 3.33 15 2 15 2Z"/></svg>
           Ingredientes
         </a>
@@ -47,7 +47,7 @@
       <li>
         <a class="app-nav-link{% if rota == 'listaMembros' %} is-active{% endif %}"
            {% if rota == 'listaMembros' %}aria-current="page"{% endif %}
-           href="{% url 'listaMembros' %}">
+           href="{% url 'listaMembros' %}" data-tour="nav-membros">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Membros
         </a>
@@ -55,7 +55,7 @@
       <li>
         <a class="app-nav-link{% if rota == 'ajuda' %} is-active{% endif %}"
            {% if rota == 'ajuda' %}aria-current="page"{% endif %}
-           href="{% url 'ajuda' %}">
+           href="{% url 'ajuda' %}" data-tour="nav-ajuda">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
           Ajuda
         </a>
@@ -92,5 +92,9 @@
 </main>
 <script src="{% static 'vendor/bootstrap/popper.min.js' %}"></script>
 <script src="{% static 'vendor/bootstrap/bootstrap.min.js' %}"></script>
+{% if user.is_authenticated %}
+{% if tour_dados %}{{ tour_dados|json_script:"tour-dados" }}{% endif %}
+<script src="{% static 'js/tour.js' %}"></script>
+{% endif %}
 </body>
 </html>
