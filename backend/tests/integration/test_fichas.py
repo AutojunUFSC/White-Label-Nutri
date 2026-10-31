@@ -362,7 +362,7 @@ def test_corte_por_ano_e_configuracao_da_instancia(logado, membro):
     corpo = logado.get("/listaIngredientes").content.decode()
     assert "Antigo 2019" in corpo
 
-    ConfiguracaoInstancia.objects.create(nome_exibicao="Nutri Jr", ano_corte_ingredientes=2024)
+    ConfiguracaoInstancia.objects.create(nome_exibicao="Empresa Exemplo", ano_corte_ingredientes=2024)
     corpo = logado.get("/listaIngredientes").content.decode()
     assert "Antigo 2019" not in corpo
 

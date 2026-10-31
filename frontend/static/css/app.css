@@ -921,3 +921,42 @@ textarea.form-control { min-height: 96px; }
   .rd-vd i { transition: none; transform: none; }
   .btn:active { transform: none; }
 }
+
+/* ---------- Tour de boas-vindas (guiado) -----------------------------------
+   Quatro painéis escurecem a tela em volta do elemento destacado e deixam um
+   "buraco" clicável; o anel e o cartão ficam por cima. Tudo é criado por tour.js. */
+.tour-camada { position: fixed; inset: 0; z-index: 2000; pointer-events: none; }
+.tour-painel { position: fixed; background: rgba(17, 24, 39, .62); pointer-events: auto; }
+.tour-anel {
+  position: fixed;
+  border-radius: var(--radius-card);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px var(--hue);
+  pointer-events: none;
+  animation: tour-pulso 1.8s ease-in-out infinite;
+}
+.tour-bloqueio { position: fixed; pointer-events: auto; }
+.tour-cartao {
+  position: fixed;
+  max-width: calc(100vw - 24px);
+  padding: 18px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 12px 32px rgba(17, 24, 39, .28);
+  pointer-events: auto;
+}
+.tour-cartao:focus { outline: none; }
+.tour-cartao--centro { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.tour-contagem { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.tour-titulo { margin: 0 0 8px; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+.tour-texto { margin: 0 0 12px; color: #2b2e31; line-height: 1.5; }
+.tour-dica { margin: 0 0 12px; padding: 8px 10px; background: var(--tint-50); border: 1px solid var(--tint-200); border-radius: var(--radius-control); font-size: 13px; color: var(--hue-ink); }
+.tour-rodape { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tour-rodape .btn-link { padding-left: 0; }
+@keyframes tour-pulso {
+  0%, 100% { box-shadow: 0 0 0 2px #fff, 0 0 0 5px var(--hue); }
+  50% { box-shadow: 0 0 0 2px #fff, 0 0 0 9px color-mix(in srgb, var(--hue) 45%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour-anel { animation: none; }
+}

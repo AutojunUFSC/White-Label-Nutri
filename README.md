@@ -19,21 +19,29 @@ Django 5.2 LTS · PostgreSQL · Bootstrap 5 · pytest — detalhes em
 
 Requisitos: **Python 3.12+** e **PostgreSQL 14+**.
 
+**1. Prepare o ambiente**
 ```bash
 python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\Activate.ps1
 pip install -r requirements-dev.txt
-
-createdb nutri                                      # banco local desta instância
-export DATABASE_URL=postgres://postgres:senha@localhost:5432/nutri
-python backend/manage.py migrate
-python backend/manage.py bootstrap_instancia --nome "Nutri Local" \
-    --admin admin --email admin@exemplo.com --chave CHAVE-LOCAL
-python backend/manage.py runserver
 ```
 
-A aplicação sobe em <http://localhost:8000>; entre com o usuário criado pelo
-`bootstrap_instancia`. As variáveis de ambiente podem ficar num arquivo `.env` na
-raiz (modelo em `.env.example`) em vez de exportadas na sessão.
+**2. Aponte para o seu PostgreSQL.** Copie `.env.example` para `.env` e ajuste a
+`DATABASE_URL` com o host, a **porta** e a senha da sua instalação (o padrão é `5432`,
+mas pode ser outra):
+```
+DATABASE_URL=postgres://postgres:SUA-SENHA@localhost:5432/nutri
+```
+Se a senha tiver caracteres como `@`, `#` ou `/`, codifique-os na URL (`@` vira `%40`).
+
+**3. Crie a empresa e suba o sistema.** O script cria o banco, aplica as migrações,
+configura a instância e oferece subir o servidor:
+```bash
+python scripts/provisionar_empresa.py
+```
+
+A aplicação sobe em <http://localhost:8000>; entre com o administrador que você definiu
+nas perguntas. Nas próximas vezes, `python scripts/provisionar_empresa.py --rodar SEU-IDENTIFICADOR`.
+Detalhes do script em [Provisionar uma empresa nova](#provisionar-uma-empresa-nova).
 
 Para popular a base de ingredientes, use a tela **Ingredientes → Importar TXT** com
 um arquivo da TACO (TXT separado por TAB), ou cadastre um a um.
@@ -46,16 +54,32 @@ Precisam de um PostgreSQL acessível pela `DATABASE_URL` — o pytest-django cri
 destrói o banco de teste sozinho. Cobertura por camada em [docs/TESTES.md](docs/TESTES.md).
 
 ## Provisionar uma empresa nova
+Um script interativo cria o banco da empresa, gera as variáveis dela (com `SECRET_KEY`
+própria), aplica as migrações e configura a instância:
+
 ```bash
-createdb nutri_acme
-DATABASE_URL=postgres://.../nutri_acme python backend/manage.py migrate
-DATABASE_URL=postgres://.../nutri_acme python backend/manage.py bootstrap_instancia \
-    --nome "Nutri Acme" --admin ana --email ana@acme.com --chave ACME-2026
+python scripts/provisionar_empresa.py
 ```
 
-O deploy de cada empresa é independente: banco próprio, variáveis próprias. O `Procfile`
-já traz o `migrate` de release e o gunicorn — passo a passo em
-[docs/OPERACAO.md](docs/OPERACAO.md).
+Requer o ambiente e o `.env` de [Rodando localmente](#rodando-localmente). Ele pergunta nome, identificador, domínio, administrador (usuário, e-mail e senha), cor
+primária, chave de cadastro e ano de corte, mostra um resumo e só cria depois da sua
+confirmação. Cada pergunta tem um padrão; no caso comum basta informar nome, e-mail e senha.
+
+O servidor PostgreSQL é o da `DATABASE_URL` do `.env` (só host, porta e credenciais são
+usados). Cada empresa ganha um banco `nutri_<identificador>`, e suas variáveis ficam em
+`instancias/<identificador>.env`, fora do Git.
+
+```bash
+python scripts/provisionar_empresa.py --rodar SEU-IDENTIFICADOR    # sobe o servidor da empresa
+python scripts/provisionar_empresa.py --remover SEU-IDENTIFICADOR  # apaga banco e variáveis
+```
+
+O `--remover` mostra o que será apagado, oferece um backup em `backups/` e exige que você
+digite o identificador para confirmar. Só apaga empresas criadas pelo próprio script.
+
+O script cobre a preparação do banco e da instância. A publicação (Gunicorn, Nginx, HTTPS e
+variáveis em produção) é independente por empresa e está em [docs/OPERACAO.md](docs/OPERACAO.md);
+o `Procfile` já traz o `migrate` de release e o gunicorn.
 
 ## Manutenção da base
 ```bash
@@ -77,6 +101,30 @@ porque plataformas de disco efêmero apagariam o upload no próximo restart.
 Aceita PNG, JPG ou WEBP até 1 MB, validados pelo conteúdo do arquivo. Aparece na
 tela de login e no topo do sistema. Para trocar, basta enviar outro; a marca antiga
 some do cache do navegador na hora.
+
+O primeiro administrador criado pelo `bootstrap_instancia` é superusuário, então já
+enxerga *Configuração da instância* em <http://localhost:8000/admin/>.
+
+### Cores sugeridas
+
+A cor primária é um código hexadecimal (`#RRGGBB`), passado em `--cor` no provisionamento
+ou editado depois no admin. Prefira tons médios a escuros: o texto branco precisa de
+contraste sobre a cor.
+
+| Cor | Código | Cor | Código |
+| --- | --- | --- | --- |
+| Verde (padrão) | `#198754` | Azul | `#0d6efd` |
+| Azul-marinho | `#0b3c8a` | Ciano | `#0891b2` |
+| Roxo | `#6f42c1` | Índigo | `#4f46e5` |
+| Rosa | `#d63384` | Vermelho | `#dc3545` |
+| Laranja | `#e8590c` | Âmbar | `#b45309` |
+| Verde-escuro | `#166534` | Turquesa | `#0f766e` |
+| Cinza-grafite | `#374151` | Marrom | `#7c4a2d` |
+
+```bash
+python backend/manage.py bootstrap_instancia --nome "SUA-EMPRESA" --admin admin \
+    --chave SUA-CHAVE-2026 --cor "#0f766e"
+```
 
 ## Documentação
 - [docs/VISAO_GERAL.md](docs/VISAO_GERAL.md) — o produto, o modelo white-label e o índice

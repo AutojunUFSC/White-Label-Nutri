@@ -28,25 +28,26 @@ def membro(db):
 def test_bootstrap_configura_empresa_nova(db):
     saida = executar(
         "bootstrap_instancia",
-        "--nome", "Nutri Acme",
+        "--nome", "Empresa Teste",
         "--admin", "ana",
-        "--email", "ana@acme.com",
+        "--email", "ana@empresa.com",
         "--senha", "S3nh4-Long4!",
-        "--chave", "ACME-2026",
+        "--chave", "CHAVE-2026",
         "--cor", "#aa00aa",
     )
     assert "configurada" in saida
 
     config = ConfiguracaoInstancia.atual()
-    assert config.nome_exibicao == "Nutri Acme"
+    assert config.nome_exibicao == "Empresa Teste"
     assert config.cor_primaria == "#aa00aa"
     assert config.ano_corte_ingredientes is None  # empresas novas sem corte (D-010)
 
     usuario = User.objects.get(username="ana")
     assert usuario.check_password("S3nh4-Long4!")
     assert usuario.groups.filter(name=settings.GRUPO_ADMINISTRADORES).exists()
+    assert usuario.is_staff and usuario.is_superuser  # precisa enxergar o admin
     assert Membro.objects.filter(usuario=usuario).exists()
-    assert Chave.objects.last().key == "ACME-2026"
+    assert Chave.objects.last().key == "CHAVE-2026"
 
 
 def test_bootstrap_recusa_instancia_ja_configurada(db):
@@ -70,7 +71,7 @@ def test_empresa_nova_funciona_ponta_a_ponta(client, db):
     """Cenário de venda: provisionar, cadastrar membro com a chave e entrar."""
     executar(
         "bootstrap_instancia",
-        "--nome", "Nutri Beta", "--admin", "gestor",
+        "--nome", "Empresa Beta", "--admin", "gestor",
         "--senha", "S3nh4-Long4!", "--chave", "BETA-1",
     )
     resp = client.post(
@@ -85,7 +86,7 @@ def test_empresa_nova_funciona_ponta_a_ponta(client, db):
         "/loginUser", {"username": "nutricionista", "password": "Outr4-S3nh4!"}
     ).url == "/listaFichas"
     # branding da instância aparece na interface
-    assert "Nutri Beta" in client.get("/listaFichas").content.decode()
+    assert "Empresa Beta" in client.get("/listaFichas").content.decode()
 
 
 def test_testar_leitura_rotulo_grava_csv(tmp_path, settings, monkeypatch):

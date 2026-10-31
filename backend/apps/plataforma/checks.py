@@ -32,8 +32,8 @@ def instancia_esta_configurada(app_configs, **kwargs):
                 # Sem seta nem travessão: o console do Windows não os representa e
                 # o aviso sai ilegível justamente onde precisa ser lido.
                 "Crie em /admin/ -> Configuração da instância: nome da empresa, cor "
-                "e, se ela esconde ingredientes antigos, o ano de corte (a Nutri Jr "
-                "usa 2024). Em instância nova, o comando bootstrap_instancia já cria."
+                "e, se ela esconde ingredientes antigos, o ano de corte. "
+                "Em instância nova, o comando bootstrap_instancia já cria."
             ),
             id="plataforma.W001",
         )

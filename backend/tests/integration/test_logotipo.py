@@ -29,7 +29,7 @@ def enviado(conteudo, nome="logo.png", tipo="image/png"):
 
 @pytest.fixture
 def configuracao(db):
-    return ConfiguracaoInstancia.objects.create(nome_exibicao="Nutri Acme")
+    return ConfiguracaoInstancia.objects.create(nome_exibicao="Empresa Teste")
 
 
 def salvar_logotipo(configuracao, arquivo):
@@ -98,7 +98,7 @@ def test_remover_logotipo(configuracao):
     salvar_logotipo(configuracao, enviado(imagem()))
     form = ConfiguracaoInstanciaForm(
         data={
-            "nome_exibicao": "Nutri Acme",
+            "nome_exibicao": "Empresa Teste",
             "cor_primaria": "#198754",
             "remover_logotipo": "on",
         },
@@ -152,12 +152,12 @@ def test_logotipo_aparece_na_tela_de_login(client, configuracao):
     salvar_logotipo(configuracao, enviado(imagem()))
     corpo = client.get("/loginUser").content.decode()
     assert reverse("logotipoInstancia") in corpo
-    assert "Nutri Acme" in corpo
+    assert "Empresa Teste" in corpo
 
 
 def test_sem_logotipo_o_login_nao_quebra(client, configuracao):
     corpo = client.get("/loginUser").content.decode()
-    assert "Nutri Acme" in corpo
+    assert "Empresa Teste" in corpo
     assert reverse("logotipoInstancia") not in corpo
 
 
