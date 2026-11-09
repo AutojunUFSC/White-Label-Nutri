@@ -46,6 +46,18 @@ Detalhes do script em [Provisionar uma empresa nova](#provisionar-uma-empresa-no
 Para popular a base de ingredientes, use a tela **Ingredientes → Importar TXT** com
 um arquivo da TACO (TXT separado por TAB), ou cadastre um a um.
 
+## Banco de teste (empresa demo)
+Para desenvolver sem preencher nada: uma empresa pronta, com 3 usuários, 31 ingredientes e 2 fichas
+(valores aproximados da TACO — só para teste, não servem para rótulo real).
+```bash
+python scripts/banco_teste.py             # cria o banco `nutri_demo`, popula e sobe em :8000
+python scripts/banco_teste.py --resetar   # apaga e recria do zero
+python scripts/banco_teste.py --sem-servidor
+```
+Usuários `admin` (administrador), `nutri` e `aluno` — senha `demo1234`; chave de cadastro
+`DEMO-2026`. É idempotente e recusa rodar com `DEBUG=False`. Para popular outro banco de
+teste já migrado: `python backend/manage.py seed_demo`.
+
 ## Testes
 ```bash
 pytest -q
