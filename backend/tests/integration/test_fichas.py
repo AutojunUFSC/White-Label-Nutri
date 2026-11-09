@@ -227,6 +227,25 @@ def test_rotulo_mostra_tabela_e_ingredientes(logado, ficha, ingrediente):
     assert "2 porções" in corpo  # BR-011: 100 / 50 exato
 
 
+def test_rotulo_separa_numero_e_unidade_com_espaco_que_nao_quebra(logado, ficha, ingrediente):
+    """Inmetro: "25 g", não "25g" — nas duas versões do rótulo; %VD não muda."""
+    import re
+
+    Ficha_Ingrediente.objects.create(
+        ficha=ficha, ingrediente=ingrediente, pesoBruto=100, pesoLiquido=100,
+        nomeFantasia="Farinha de trigo",
+    )
+    logado.post(f"/recalcularFicha/{ficha.pk}")
+    corpo = logado.get(f"/fichaX/{ficha.pk}").content.decode()
+    assert "Porção: 50&nbsp;g" in corpo
+    assert "<b>100&nbsp;g</b>" in corpo
+    assert "Por 100&nbsp;g (<b>50&nbsp;g</b>, %VD*)" in corpo
+    # nenhum "<número>g" colado, em texto corrido ou nas células
+    assert not re.search(r"(?<![\w.,])\d+(?:,\d+)?(?:g|mg|kcal|mcg)", re.sub(r"<[^>]+>", " ", corpo.split("conteudo-para-copiar")[1].split("app-detalhe-lateral")[0]))
+    assert re.search(r"\d&nbsp;(?:g|mg|kcal)</span>", corpo)  # versão linear
+    assert re.search(r"\(<b>[\d,]+&nbsp;(?:g|mg|kcal)</b>, \d+%\)", corpo)  # %VD intacto
+
+
 def test_rotulo_de_ficha_sem_tabela_nao_quebra(logado, membro):
     """B4 corrigido: ficha órfã (como as 16 do backup) não gera mais erro 500."""
     orfa = Ficha.objects.create(

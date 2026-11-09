@@ -92,15 +92,15 @@
           <hr class="linha-cabeca1">
           <div class="text-start">
             Porções por embalagem: {{ numPorcoesExibicao }}<br>
-            Porção: {{ pesoAnvisaSemZero }}g ({{ fichaAtual.medCaseiraPorcao }})
+            Porção: {{ pesoAnvisaSemZero }}&nbsp;g ({{ fichaAtual.medCaseiraPorcao }})
           </div>
           <hr class="linha-cabeca2">
         </td>
       </tr>
       <tr>
         <td class="primeira-coluna">ㅤ</td>
-        <td><b>100g</b></td>
-        <td><b>{{ pesoAnvisaSemZero }}g</b></td>
+        <td><b>100&nbsp;g</b></td>
+        <td><b>{{ pesoAnvisaSemZero }}&nbsp;g</b></td>
         <td><b>%VD*</b></td>
       </tr>
       {% for linha in linhas %}
@@ -139,18 +139,18 @@
             <strong>INFORMAÇÃO NUTRICIONAL</strong>
             <hr class="linha-cabeca1">
             Porções por embalagem: {{ numPorcoesExibicao }} <b>•</b>
-            Porção: {{ pesoAnvisaSemZero }}g ({{ fichaAtual.medCaseiraPorcao }})
+            Porção: {{ pesoAnvisaSemZero }}&nbsp;g ({{ fichaAtual.medCaseiraPorcao }})
             <hr class="linha-cabeca2">
           </div>
         </td>
       </tr>
       <tr>
         <td>
-          <p class="rotulo-texto mb-0">Por 100g (<b>{{ pesoAnvisaSemZero }}g</b>, %VD*):
+          <p class="rotulo-texto mb-0">Por 100&nbsp;g (<b>{{ pesoAnvisaSemZero }}&nbsp;g</b>, %VD*):
             {% for linha in linhas %}
               {% if linha|length > 3 %}
-                {{ linha.0 }} <span class="sem-quebra">{{ linha.4 }}{{ linha.3 }}</span>
-                (<b>{{ linha.1 }}{{ linha.3 }}</b>{% if linha.2 != "" %}, {{ linha.2 }}%{% endif %})
+                {{ linha.0 }} <span class="sem-quebra">{{ linha.4 }}&nbsp;{{ linha.3 }}</span>
+                (<b>{{ linha.1 }}&nbsp;{{ linha.3 }}</b>{% if linha.2 != "" %}, {{ linha.2 }}%{% endif %})
                 {% if linha.0 == "Carboidratos totais" %}, dos quais
                 {% elif linha.0 == "Gorduras Totais" %}, das quais
                 {% elif forloop.last %}.{% else %}, <b>•</b>{% endif %}
