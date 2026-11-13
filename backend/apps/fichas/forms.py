@@ -124,8 +124,8 @@ class FormInformacoesComplementares(forms.ModelForm):
 class IngredienteForm(forms.ModelForm):
     dataCriacao = campo_data("Data de criação")
     composicao = forms.CharField(
-        label="Composição",
-        help_text="Formato: leite, açúcar e lactose",
+        label="Composição (opcional)",
+        help_text="Opcional. Preencha apenas para ingredientes compostos (ex.: leite, açúcar e lactose). Ingredientes simples (como tomate) devem ficar com ela vazia.",
         required=False,
     )
 
